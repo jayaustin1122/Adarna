@@ -22,7 +22,7 @@ fun flipCard(view: View, card: Card, onAnimationEnd: () -> Unit) {
         override fun onAnimationEnd(p0: Animator) {
             if (card.isFaceUp) {
                 // Show the card front
-                (view as? ImageView)?.setImageResource(card.id)
+                (view as? ImageView)?.setImageResource(card.id!!)
             } else {
                 // Show the card back
                 (view as? ImageView)?.setImageResource(R.drawable.cardback)

@@ -1,13 +1,14 @@
 package com.tinikling.cardgame.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.tinikling.cardgame.databinding.ItemCardBinding
 import com.tinikling.cardgame.models.Card
 import com.tinikling.cardgame.R
 import com.tinikling.cardgame.utils.flipCard
-
 class CardAdapter(
     private val cards: List<Card>,
     private val cardClickListener: (Int) -> Unit
@@ -17,18 +18,26 @@ class CardAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(card: Card) {
-            // If the card is face up or matched, show its front; otherwise, show the back
+            // Show the image or description based on whether the card is face up
             if (card.isFaceUp || card.isMatched) {
-                binding.cardImage.setImageResource(card.id) // Show the card's front
+                // If image is available, show it; otherwise, show the description
+                if (card.id != null) {
+                    binding.cardImage.setImageResource(card.id) // Show the image if available
+                } else {
+                    binding.cardImage.setImageResource(R.drawable.bg) // Set a default card back image
+                    binding.cardDescription.visibility = View.VISIBLE
+                    binding.cardDescription.text = card.description // Show the description if image is null
+                }
             } else {
-                binding.cardImage.setImageResource(R.drawable.cardback) // Show the card's back
+                binding.cardImage.setImageResource(R.drawable.cardback) // Show the card back when it's not face up
+                binding.cardDescription.visibility = View.GONE // Hide the description when the card is not flipped
             }
 
-            // Set click listener with card flip animation
+            // Set click listener for card flip animation
             binding.cardView.setOnClickListener {
                 if (!card.isFaceUp && !card.isMatched) {
                     flipCard(binding.cardImage, card) {
-                        // After the flip, notify the adapter about the click event
+                        // After flip, notify the adapter about the click event
                         cardClickListener(adapterPosition)
                     }
                 }

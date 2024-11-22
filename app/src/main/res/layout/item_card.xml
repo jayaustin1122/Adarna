@@ -4,12 +4,30 @@
     android:layout_width="100dp"
     android:layout_height="150dp"
     android:layout_margin="8dp"
-    marging="8dp"
     android:elevation="4dp">
 
-    <ImageView
-        android:id="@+id/card_image"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
+        android:layout_height="match_parent">
+
+        <!-- Image view for the card's image -->
+        <ImageView
+            android:id="@+id/card_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />  <!-- Initially hidden for non-image cards -->
+
+        <!-- Text view for the card's description -->
+        <TextView
+            android:id="@+id/card_description"
+            android:layout_width="wrap_content"
+            android:textAlignment="center"
+            android:fontFamily="@font/irish"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_centerInParent="true" /> <!-- Initially hidden for image cards -->
+
+    </RelativeLayout>
+
 </androidx.cardview.widget.CardView>

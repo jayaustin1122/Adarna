@@ -1,7 +1,9 @@
 package com.tinikling.cardgame.models
 
 data class Card(
-    val id: Int,        // Resource ID of the card's image
-    var isFaceUp: Boolean = false,  // Whether the card is currently face up
-    var isMatched: Boolean = false  // Whether the card has been matched
+    val id: Int?,                // Image resource ID can be null
+    val description: String?,     // Description can also be null
+    val pair: Int?,     // Description can also be null
+    var isFaceUp: Boolean = false,
+    var isMatched: Boolean = false
 )
