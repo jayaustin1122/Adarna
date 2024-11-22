@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.tinikling.cardgame.ui.SplashFragment"
+        android:label="SplashFragment" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.tinikling.cardgame.ui.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/dashBoardFragment"
+        android:name="com.tinikling.cardgame.ui.DashBoardFragment"
+        android:label="DashBoardFragment" />
+    <fragment
+        android:id="@+id/leaderBoardsFragment"
+        android:name="com.tinikling.cardgame.ui.LeaderBoardsFragment"
+        android:label="fragment_leader_boards"
+        tools:layout="@layout/fragment_leader_boards" />
+    <fragment
+        android:id="@+id/multiPlayerFragment"
+        android:name="com.tinikling.cardgame.ui.MultiPlayerFragment"
+        android:label="fragment_multi_player"
+        tools:layout="@layout/fragment_multi_player" />
+</navigation>
