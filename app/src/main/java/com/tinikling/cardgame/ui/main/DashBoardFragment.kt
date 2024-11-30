@@ -38,6 +38,9 @@ class DashBoardFragment : Fragment() {
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.maps)
         mediaPlayer?.isLooping = true // To loop the music
         mediaPlayer?.start()
+        binding.exitButton.setOnClickListener {
+            findNavController().navigate(R.id.leaderBoardsFragment)
+        }
     }
     private fun playGif() {
         val torchViews = listOf(binding.torch1, binding.torch2, binding.torch3, binding.torch4)
