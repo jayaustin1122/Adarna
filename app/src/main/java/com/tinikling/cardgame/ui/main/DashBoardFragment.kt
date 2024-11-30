@@ -9,11 +9,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.tinikling.cardgame.R
+import com.tinikling.cardgame.databinding.DialogPlayerInputBinding
 import com.tinikling.cardgame.databinding.DialogQuestionBinding
 import com.tinikling.cardgame.databinding.FragmentDashBoardBinding
+import com.tinikling.cardgame.ui.multiplayer.MultiPlayerFragment
 
 
 class DashBoardFragment : Fragment() {
@@ -41,7 +44,51 @@ class DashBoardFragment : Fragment() {
         binding.exitButton.setOnClickListener {
             findNavController().navigate(R.id.leaderBoardsFragment)
         }
+        binding.continueButton.setOnClickListener {
+            showPlayerInputDialog()
+        }
     }
+    private fun showPlayerInputDialog() {
+        // Inflate the dialog's layout with ViewBinding
+        val binding = DialogPlayerInputBinding.inflate(LayoutInflater.from(requireContext()))
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Enter Player Names and Game Duration")
+            .setView(binding.root) // Set the root of the binding as the view for the dialog
+            .setPositiveButton("Start Game") { dialogInterface, _ ->
+                val playerNames = binding.playerNamesEditText.text.toString()
+                val gameDuration = binding.gameDurationEditText.text.toString()
+
+                if (playerNames.isNotEmpty() && gameDuration.isNotEmpty()) {
+                    val playerList = playerNames.split(",").map { it.trim() }
+                    val durationInMinutes = gameDuration.toIntOrNull()
+
+                    if (durationInMinutes != null && durationInMinutes >= 5) {
+                        // Create a bundle to pass the data
+                        val bundle = Bundle().apply {
+                            putStringArray("playerNames", playerList.toTypedArray())
+                            putInt("gameDuration", durationInMinutes)
+                        }
+                        val multiPlayerFragment = MultiPlayerFragment()
+                        multiPlayerFragment.arguments = bundle
+                        findNavController().navigate(R.id.multiPlayerFragment, bundle)
+                    } else {
+                        Toast.makeText(requireContext(), "Please enter a game duration of 5 sec or more.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Please enter both names and game duration.", Toast.LENGTH_SHORT).show()
+                }
+
+                dialogInterface.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.dismiss() }
+            .create()
+
+        dialog.show()
+    }
+
+
+
     private fun playGif() {
         val torchViews = listOf(binding.torch1, binding.torch2, binding.torch3, binding.torch4)
         torchViews.forEach { torchView ->
@@ -64,7 +111,6 @@ class DashBoardFragment : Fragment() {
 
         val defendDialog = AlertDialog.Builder(requireContext())
             .setView(defendDialogBinding.root)
-            .setCancelable(false)
             .create()
 
         defendDialogBinding.answerButton1.setOnClickListener {

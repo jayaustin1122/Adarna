@@ -3,8 +3,8 @@
     android:interpolator="@android:anim/cycle_interpolator">
     <translate
         android:duration="500"
-        android:fromXDelta="-5%"
-        android:toXDelta="5%"
-        android:repeatCount="3"
+        android:fromXDelta="-1%"
+        android:toXDelta="1%"
+        android:repeatCount="2"
         android:repeatMode="reverse"/>
 </set>
