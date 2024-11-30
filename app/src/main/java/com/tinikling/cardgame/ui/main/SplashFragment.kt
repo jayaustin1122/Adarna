@@ -1,4 +1,4 @@
-package com.tinikling.cardgame.ui
+package com.tinikling.cardgame.ui.main
 
 import android.os.Bundle
 import android.os.Handler

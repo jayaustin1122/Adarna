@@ -23,10 +23,28 @@
             android:layout_width="wrap_content"
             android:textAlignment="center"
             android:fontFamily="@font/irish"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="3"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             android:layout_centerInParent="true" /> <!-- Initially hidden for image cards -->
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:fontFamily="@font/irish"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="3"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:text="sa,pe"
+            android:layout_alignBottom="@id/card_image"/> <!-- Initially hidden for image cards -->
 
     </RelativeLayout>
 

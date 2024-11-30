@@ -2,7 +2,19 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.CardGame" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:textColorPrimary">#FFFFFF</item>  <!-- Text color for primary text -->
+        <item name="android:textColorSecondary">#FFFFFF</item> <!-- Text color for secondary text -->
+
+        <!-- Set primary color to white for better contrast on darker backgrounds -->
+        <item name="colorPrimary">#FFFFFF</item>  <!-- Primary color (e.g., for buttons, highlights) -->
+        <item name="colorPrimaryVariant">#FFFFFF</item>
+
+        <!-- StatusBar and NavigationBar -->
+        <item name="android:statusBarColor">#0A2111</item>  <!-- Transparent status bar -->
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item> <!-- System bars drawn with background -->
+        <item name="android:fitsSystemWindows">false</item> <!-- Avoid default window padding -->
+        <item name="android:windowLightStatusBar">true</item> <!-- Light icons for dark content (if needed) -->
     </style>
 
     <style name="Theme.CardGame" parent="Base.Theme.CardGame" />

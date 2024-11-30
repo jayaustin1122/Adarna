@@ -1,0 +1,107 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@drawable/dialog_background"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/difficulty"
+                android:layout_width="match_parent"
+                android:fontFamily="@font/irish"
+                android:paddingLeft="10dp"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"
+                android:shadowColor="@android:color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="3"
+                android:text="Please Select Level"
+                android:textSize="32sp" />
+
+            <!-- Outer LinearLayout for vertical arrangement of button sets -->
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <!-- First vertical set of buttons -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <Button
+
+                        android:id="@+id/answerButton1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/button"
+                        android:backgroundTint="@null"
+                        android:foregroundTint="@null"
+                        android:shadowColor="@android:color/black"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:textSize="25sp"
+                        android:fontFamily="@font/irish"
+                        android:textColor="@color/white"
+                        android:shadowRadius="3"
+                        android:text="Easy" />
+
+                    <Button
+                        android:id="@+id/answerButton2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/button"
+                        android:backgroundTint="@null"
+                        android:foregroundTint="@null"
+                        android:shadowColor="@android:color/black"
+                        android:shadowDx="2"
+                        android:textSize="25sp"
+                        android:fontFamily="@font/irish"
+                        android:shadowDy="2"
+                        android:textColor="@color/white"
+                        android:shadowRadius="3"
+                        android:text="Medium" />
+                    <Button
+                        android:id="@+id/answerButton3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/button"
+                        android:backgroundTint="@null"
+                        android:foregroundTint="@null"
+                        android:shadowColor="@android:color/black"
+                        android:shadowDx="2"
+                        android:textSize="25sp"
+                        android:fontFamily="@font/irish"
+                        android:shadowDy="2"
+                        android:textColor="@color/white"
+                        android:shadowRadius="3"
+                        android:text="Hard" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

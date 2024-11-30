@@ -15,7 +15,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="200dp"
         android:fontFamily="@font/irish"
-        android:text="Ibong Adarna"
+        android:text="iJuan"
         android:shadowColor="@android:color/black"
         android:shadowDx="2"
         android:shadowDy="2"

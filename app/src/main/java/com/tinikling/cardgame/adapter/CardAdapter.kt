@@ -23,7 +23,11 @@ class CardAdapter(
                 // If image is available, show it; otherwise, show the description
                 if (card.id != null) {
                     binding.cardImage.setImageResource(card.id) // Show the image if available
+                    binding.title.text = card.name
+                    binding.title.visibility = View.VISIBLE
+                    binding.cardDescription.visibility = View.GONE
                 } else {
+                    binding.title.visibility = View.GONE
                     binding.cardImage.setImageResource(R.drawable.bg) // Set a default card back image
                     binding.cardDescription.visibility = View.VISIBLE
                     binding.cardDescription.text = card.description // Show the description if image is null
@@ -31,6 +35,7 @@ class CardAdapter(
             } else {
                 binding.cardImage.setImageResource(R.drawable.cardback) // Show the card back when it's not face up
                 binding.cardDescription.visibility = View.GONE // Hide the description when the card is not flipped
+                binding.title.visibility = View.GONE
             }
 
             // Set click listener for card flip animation

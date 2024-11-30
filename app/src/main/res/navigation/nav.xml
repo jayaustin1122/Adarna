@@ -7,25 +7,33 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.tinikling.cardgame.ui.SplashFragment"
+        android:name="com.tinikling.cardgame.ui.main.SplashFragment"
         android:label="SplashFragment" />
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.tinikling.cardgame.ui.HomeFragment"
+        android:name="com.tinikling.cardgame.ui.level.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/dashBoardFragment"
-        android:name="com.tinikling.cardgame.ui.DashBoardFragment"
+        android:name="com.tinikling.cardgame.ui.main.DashBoardFragment"
         android:label="DashBoardFragment" />
     <fragment
         android:id="@+id/leaderBoardsFragment"
-        android:name="com.tinikling.cardgame.ui.LeaderBoardsFragment"
+        android:name="com.tinikling.cardgame.ui.main.LeaderBoardsFragment"
         android:label="fragment_leader_boards"
         tools:layout="@layout/fragment_leader_boards" />
     <fragment
         android:id="@+id/multiPlayerFragment"
-        android:name="com.tinikling.cardgame.ui.MultiPlayerFragment"
+        android:name="com.tinikling.cardgame.ui.multiplayer.MultiPlayerFragment"
         android:label="fragment_multi_player"
         tools:layout="@layout/fragment_multi_player" />
+    <fragment
+        android:id="@+id/averageFragment"
+        android:name="com.tinikling.cardgame.ui.level.AverageFragment"
+        android:label="AverageFragment" />
+    <fragment
+        android:id="@+id/hardFragment"
+        android:name="com.tinikling.cardgame.ui.level.HardFragment"
+        android:label="HardFragment" />
 </navigation>
