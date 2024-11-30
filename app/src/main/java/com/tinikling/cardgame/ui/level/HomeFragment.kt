@@ -1,5 +1,7 @@
 package com.tinikling.cardgame.ui.level
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -9,11 +11,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.firebase.firestore.FirebaseFirestore
 import com.tinikling.cardgame.R
 import com.tinikling.cardgame.adapter.CardAdapter
+import com.tinikling.cardgame.databinding.DialogEnterNameBinding
 import com.tinikling.cardgame.databinding.FragmentHomeBinding
 import com.tinikling.cardgame.models.Card
 
@@ -25,6 +33,8 @@ class HomeFragment : Fragment() {
     private var isCardClickable: Boolean = true
     private var firstCardIndex: Int? = null // Store the index of the first flipped card
     private var points: Int = 0
+    private var hints: Int = 0
+    private var timeUsed: String = ""
     private lateinit var countDownTimer: CountDownTimer
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -35,15 +45,27 @@ class HomeFragment : Fragment() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.points.text = points.toString()
+        binding.points.text = "Points: $points"
         binding.recyclerView.layoutManager =
             GridLayoutManager(requireContext(), 3) // 4 cards per row
-        startTimer()
+        startTimer(3)
         setupGame()
-       // Glide.with(this).asGif().load(R.drawable.bg).into(binding.bg)
-        // Initialize adapter and set it to RecyclerView
+
+        binding.hints.setOnClickListener {
+            if (points % 2 == 0 && points != 0) {
+                showHintForMatchingCards() // Show hint if points are divisible by 2, 4, or 6
+                hints++
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "You can use hints after matching 2 sets of cards.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
         adapter = CardAdapter(cards) { position -> onCardClicked(position) }
         binding.recyclerView.adapter = adapter
     }
@@ -95,62 +117,115 @@ class HomeFragment : Fragment() {
         cards.addAll(cardData)
     }
 
-    private fun startTimer() {
-        countDownTimer = object : CountDownTimer(60000, 1000) { // 1 minute
+
+    private fun startTimer(durationInMinutes: Int) {
+        // Convert minutes to milliseconds
+        val durationInMillis = durationInMinutes * 60000L
+
+        countDownTimer = object : CountDownTimer(durationInMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsRemaining = millisUntilFinished / 1000
-                binding.timerText.text = "${secondsRemaining}s"
+                val minutesRemaining = secondsRemaining / 60
+                val secondsRemainingInMinute = secondsRemaining % 60
+
+                // Show time in format: MM:SS
+                binding.timerText.text = String.format("%02d:%02d", minutesRemaining, secondsRemainingInMinute)
+                timeUsed = "$minutesRemaining:$secondsRemainingInMinute"
             }
 
             override fun onFinish() {
-                Toast.makeText(
-                    requireActivity(), "Time’s up! Please Try Again.", Toast.LENGTH_LONG
-                ).show()
+                if (isAdded) {
+                    Toast.makeText(
+                        requireActivity(), "Time’s up! Please Try Again.", Toast.LENGTH_LONG
+                    ).show()
+                }
                 findNavController().navigateUp()
+                onGameFinished(timeUsed)
             }
         }
         countDownTimer.start()
     }
 
 
-    private fun onCardClicked(position: Int) {
-        if (!isCardClickable) return  // Prevent clicks while another animation or check is ongoing
+    private fun updateRecyclerView() {
+        if (cards.isEmpty()) {
+            onGameFinished(timeUsed)
+        } else {
+            adapter.notifyDataSetChanged()
+        }
+    }
 
+    private fun onCardClicked(position: Int) {
+        if (!isCardClickable) return
         val clickedCard = cards[position]
 
         if (!clickedCard.isFaceUp && !clickedCard.isMatched) {
-            // Flip the card
+
             clickedCard.isFaceUp = true
             adapter.notifyItemChanged(position)
 
-            isCardClickable = false  // Disable further clicks until this card is processed
+            isCardClickable = false
 
             if (firstCardIndex == null) {
-                // This is the first card flipped
+
                 firstCardIndex = position
-                isCardClickable = true  // Re-enable clicks since only one card is flipped
+                isCardClickable = true
             } else {
-                // This is the second card flipped
+
                 checkForMatch(firstCardIndex!!, position)
                 firstCardIndex = null
             }
         }
     }
     private fun showMatchMessage() {
-        val matchMessage = binding.matchMessage // Assuming you use View Binding
-        matchMessage.text = if (points % 2 == 0) "Mahusay!" else "Magaling!" // Alternate between the two messages
+        val matchMessage = binding.matchMessage
+
+        val messages = listOf("Mahusay!", "Magaling!", "Ang galing mo!", "Excellent!", "Great job!", "Tama yan!")
+
+        val selectedMessage = when {
+            points >= 10 -> "Astig ka!"
+            points % 2 == 0 -> messages[0]
+            points % 3 == 0 -> messages[1]
+            else -> messages.random()
+        }
+
+
+        matchMessage.text = selectedMessage
         matchMessage.visibility = View.VISIBLE
 
-        // Load and start the animation
-        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in) // or R.anim.fade_in
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
         matchMessage.startAnimation(animation)
 
-        // Hide the message after animation
         Handler(Looper.getMainLooper()).postDelayed({
             matchMessage.visibility = View.GONE
-        }, 1500) // Hide message after 1.5 seconds
+        }, 1500)
     }
 
+    private fun showHintForMatchingCards() {
+
+        for (i in cards.indices) {
+            val card1 = cards[i]
+            if (!card1.isMatched) {
+                for (j in i + 1 until cards.size) {
+                    val card2 = cards[j]
+                    if (card1.pair == card2.pair && !card2.isMatched) {
+
+                        shakeCardAtIndex(i)
+                        shakeCardAtIndex(j)
+                        return
+                    }
+                }
+            }
+        }
+    }
+
+    private fun shakeCardAtIndex(index: Int) {
+        val viewHolder = binding.recyclerView.findViewHolderForAdapterPosition(index)
+        viewHolder?.itemView?.let { cardView ->
+            val shakeAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.shake)
+            cardView.startAnimation(shakeAnimation)
+        }
+    }
 
     private fun checkForMatch(firstCardIndex: Int, secondCardIndex: Int) {
         val firstCard = cards[firstCardIndex]
@@ -164,14 +239,10 @@ class HomeFragment : Fragment() {
             binding.points.text = "Points $points"
             showMatchMessage()
             Toast.makeText(requireContext(), "Match found! Points: $points", Toast.LENGTH_SHORT).show()
-
-            // Delay to visually confirm the match before removing cards
+            updateRecyclerView()
             Handler(Looper.getMainLooper()).postDelayed({
-                // Remove the matched cards from the list after delay
                 cards[firstCardIndex].isFaceUp = false
                 cards[secondCardIndex].isFaceUp = false
-
-                // Ensure correct order of removal by removing higher index first
                 if (firstCardIndex > secondCardIndex) {
                     cards.removeAt(firstCardIndex)
                     cards.removeAt(secondCardIndex)
@@ -179,27 +250,25 @@ class HomeFragment : Fragment() {
                     cards.removeAt(secondCardIndex)
                     cards.removeAt(firstCardIndex)
                 }
-
-                // Notify adapter of the card removal
                 adapter.notifyItemRangeRemoved(firstCardIndex.coerceAtMost(secondCardIndex), 2)
-
-                // Flip all remaining cards face down and reshuffle
                 closeAllCardsAndReshuffle()
 
-                isCardClickable = true // Re-enable clicks after cards are processed
-            }, 1000)  // 1-second delay before removing cards
+                isCardClickable = true
+            }, 1000)
         } else {
-            // Cards do not match, flip them back after a delay
+            updateRecyclerView()
+
             Handler(Looper.getMainLooper()).postDelayed({
                 firstCard.isFaceUp = false
                 secondCard.isFaceUp = false
                 adapter.notifyItemChanged(firstCardIndex)
                 adapter.notifyItemChanged(secondCardIndex)
-                isCardClickable = true  // Re-enable clicks after flipping back
-            }, 1000)  // 1-second delay before flipping them back
+                isCardClickable = true
+            }, 1000)
         }
     }
     private fun closeAllCardsAndReshuffle() {
+        updateRecyclerView()
         // Close all remaining unmatched cards
         for (i in cards.indices) {
             val card = cards[i]
@@ -208,12 +277,85 @@ class HomeFragment : Fragment() {
                 adapter.notifyItemChanged(i)
             }
         }
-
-        // Reshuffle the cards
         cards.shuffle()
-
-        // Notify the adapter that the entire dataset has changed
         adapter.notifyDataSetChanged()
+    }
+
+    @SuppressLint("MissingInflatedId")
+    private fun onGameFinished(timeUsed: String) {
+        if (!isAdded || activity == null) {
+            // If the fragment is not attached, don't proceed with showing dialog or navigation
+            return
+        }
+
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = layoutInflater
+        val binding = DialogEnterNameBinding.inflate(inflater)
+        builder.setView(binding.root)
+
+        // Set the text for the views using View Binding
+        binding.pointsTextView.text = "Points: $points"
+        binding.hintUsedTextView.text = "Hints Used: $hints"
+        binding.timerText.text = "Time Used: $timeUsed"
+
+        val dialog = builder.create()
+
+        // Handle submit button click
+        binding.buttonSubmit.setOnClickListener {
+            val playerName = binding.editTextPlayerName.text.toString()
+
+            if (playerName.isBlank()) {
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Please enter your name to continue.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Save leaderboard if name is valid
+                saveLeaderboard(playerName, timeUsed)
+                if (isAdded) {
+                    findNavController().navigateUp()
+                }
+                dialog.dismiss()
+            }
+        }
+
+        if (isAdded && !dialog.isShowing) {
+            dialog.show()
+        }
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        countDownTimer?.cancel()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        countDownTimer?.cancel()
+    }
+    private fun saveLeaderboard(userName: String, timeUsed: String) {
+        val timeStamp = System.currentTimeMillis()
+        val leaderboardData = hashMapOf(
+            "name" to userName,
+            "points" to points.toString(),
+            "hintsUsed" to hints.toString(),
+            "timeRemaining" to timeUsed.toString(),
+            "level" to "easy"
+        )
+        val db = FirebaseFirestore.getInstance()
+        db.collection("leaderBoards")
+            .document(timeStamp.toString())
+            .set(leaderboardData)
+            .addOnSuccessListener {
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Your score has been Uploaded!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { e ->
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Error saving score: $e", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
 

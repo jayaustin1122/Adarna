@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_background"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="Please Enter your name to upload your score."
+        android:shadowColor="@android:color/black"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="3"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:fontFamily="@font/irish"
+        android:paddingBottom="10dp" />
+    <TextView
+        android:id="@+id/pointsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:shadowColor="@android:color/black"
+        android:textColor="@color/white"
+        android:fontFamily="@font/irish"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="3"
+        android:text="Points: 0"
+        android:textSize="16sp"
+        android:paddingTop="8dp" />
+
+    <TextView
+        android:id="@+id/hintUsedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hints Used: 0"
+        android:shadowColor="@android:color/black"
+        android:textColor="@color/white"
+        android:fontFamily="@font/irish"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="3"
+        android:textSize="16sp"
+        android:paddingTop="8dp" />
+    <TextView
+        android:id="@+id/timerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TimeFinish: 0"
+        android:textSize="16sp"
+        android:shadowColor="@android:color/black"
+        android:textColor="@color/white"
+        android:fontFamily="@font/irish"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="3"
+        android:paddingTop="8dp" />
+    <EditText
+        android:id="@+id/editTextPlayerName"
+        android:layout_width="match_parent"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/irish"
+        android:inputType="textPersonName" />
+
+    <ImageView
+        android:id="@+id/buttonSubmit"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/submit"
+        android:layout_gravity="center" />
+
+</LinearLayout>

@@ -1,5 +1,7 @@
 package com.tinikling.cardgame.ui.level
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -8,11 +10,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.firebase.firestore.FirebaseFirestore
 import com.tinikling.cardgame.R
 import com.tinikling.cardgame.adapter.CardAdapter
+import com.tinikling.cardgame.databinding.DialogEnterNameBinding
 import com.tinikling.cardgame.databinding.FragmentHardBinding
 import com.tinikling.cardgame.models.Card
 
@@ -21,8 +26,11 @@ class HardFragment : Fragment() {
     private lateinit var binding : FragmentHardBinding
     private lateinit var adapter: CardAdapter
     private var cards: MutableList<Card> = mutableListOf()
+    private var isCardClickable: Boolean = true
     private var firstCardIndex: Int? = null // Store the index of the first flipped card
     private var points: Int = 0
+    private var hints: Int = 0
+    private var timeUsed: String = ""
     private lateinit var countDownTimer: CountDownTimer
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,15 +42,27 @@ class HardFragment : Fragment() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.points.text = points.toString()
+        binding.points.text = "Points: $points"
         binding.recyclerView.layoutManager =
             GridLayoutManager(requireContext(), 3) // 4 cards per row
-        startTimer()
+        startTimer(1)
         setupGame()
-        // Glide.with(this).asGif().load(R.drawable.bg).into(binding.bg)
-        // Initialize adapter and set it to RecyclerView
+
+        binding.hints.setOnClickListener {
+            if (points % 2 == 0 && points != 0) {
+                showHintForMatchingCards() // Show hint if points are divisible by 2, 4, or 6
+                hints++
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "You can use hints after matching 2 sets of cards.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
         adapter = CardAdapter(cards) { position -> onCardClicked(position) }
         binding.recyclerView.adapter = adapter
     }
@@ -98,40 +118,112 @@ class HardFragment : Fragment() {
         cards.addAll(cardData)
     }
 
-    private fun startTimer() {
-        countDownTimer = object : CountDownTimer(60000, 1000) { // 1 minute
+    private fun startTimer(durationInMinutes: Int) {
+        // Convert minutes to milliseconds
+        val durationInMillis = durationInMinutes * 60000L
+
+        countDownTimer = object : CountDownTimer(durationInMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsRemaining = millisUntilFinished / 1000
-                binding.timerText.text = "${secondsRemaining}s"
+                val minutesRemaining = secondsRemaining / 60
+                val secondsRemainingInMinute = secondsRemaining % 60
+
+                // Show time in format: MM:SS
+                binding.timerText.text = String.format("%02d:%02d", minutesRemaining, secondsRemainingInMinute)
+                timeUsed = "$minutesRemaining:$secondsRemainingInMinute"
             }
 
             override fun onFinish() {
-                Toast.makeText(
-                    requireContext(), "Time’s up! Please Try Again.", Toast.LENGTH_LONG
-                ).show()
+                if (isAdded) {
+                    Toast.makeText(
+                        requireActivity(), "Time’s up! Please Try Again.", Toast.LENGTH_LONG
+                    ).show()
+                }
                 findNavController().navigateUp()
+                onGameFinished(timeUsed)
             }
         }
         countDownTimer.start()
     }
 
 
+    private fun updateRecyclerView() {
+        if (cards.isEmpty()) {
+            onGameFinished(timeUsed)
+        } else {
+            adapter.notifyDataSetChanged()
+        }
+    }
+
     private fun onCardClicked(position: Int) {
+        if (!isCardClickable) return
         val clickedCard = cards[position]
 
         if (!clickedCard.isFaceUp && !clickedCard.isMatched) {
-            // Flip the card
+
             clickedCard.isFaceUp = true
             adapter.notifyItemChanged(position)
 
+            isCardClickable = false
+
             if (firstCardIndex == null) {
-                // This is the first card flipped
+
                 firstCardIndex = position
+                isCardClickable = true
             } else {
-                // This is the second card flipped
+
                 checkForMatch(firstCardIndex!!, position)
                 firstCardIndex = null
             }
+        }
+    }
+    private fun showMatchMessage() {
+        val matchMessage = binding.matchMessage
+
+        val messages = listOf("Mahusay!", "Magaling!", "Ang galing mo!", "Excellent!", "Great job!", "Tama yan!")
+
+        val selectedMessage = when {
+            points >= 10 -> "Astig ka!"
+            points % 2 == 0 -> messages[0]
+            points % 3 == 0 -> messages[1]
+            else -> messages.random()
+        }
+
+
+        matchMessage.text = selectedMessage
+        matchMessage.visibility = View.VISIBLE
+
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
+        matchMessage.startAnimation(animation)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            matchMessage.visibility = View.GONE
+        }, 1500)
+    }
+
+    private fun showHintForMatchingCards() {
+
+        for (i in cards.indices) {
+            val card1 = cards[i]
+            if (!card1.isMatched) {
+                for (j in i + 1 until cards.size) {
+                    val card2 = cards[j]
+                    if (card1.pair == card2.pair && !card2.isMatched) {
+
+                        shakeCardAtIndex(i)
+                        shakeCardAtIndex(j)
+                        return
+                    }
+                }
+            }
+        }
+    }
+
+    private fun shakeCardAtIndex(index: Int) {
+        val viewHolder = binding.recyclerView.findViewHolderForAdapterPosition(index)
+        viewHolder?.itemView?.let { cardView ->
+            val shakeAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.shake)
+            cardView.startAnimation(shakeAnimation)
         }
     }
 
@@ -145,14 +237,12 @@ class HardFragment : Fragment() {
             secondCard.isMatched = true
             points += 1
             binding.points.text = "Points $points"
-
-            // Show toast for the match and points
-            Toast.makeText(requireContext(), "Match found! Points: $points", Toast.LENGTH_SHORT)
-                .show()
-
-            // Delay the removal of cards to allow for visual confirmation of the match
+            showMatchMessage()
+            Toast.makeText(requireContext(), "Match found! Points: $points", Toast.LENGTH_SHORT).show()
+            updateRecyclerView()
             Handler(Looper.getMainLooper()).postDelayed({
-                // Remove the matched cards from the list
+                cards[firstCardIndex].isFaceUp = false
+                cards[secondCardIndex].isFaceUp = false
                 if (firstCardIndex > secondCardIndex) {
                     cards.removeAt(firstCardIndex)
                     cards.removeAt(secondCardIndex)
@@ -160,22 +250,114 @@ class HardFragment : Fragment() {
                     cards.removeAt(secondCardIndex)
                     cards.removeAt(firstCardIndex)
                 }
-
-                // Notify the adapter that items have been removed
                 adapter.notifyItemRangeRemoved(firstCardIndex.coerceAtMost(secondCardIndex), 2)
-                //addNewPair()
-                // Optionally, if you want to reset all card flips after a match, you can:
-                adapter.notifyDataSetChanged()  // Refresh the entire RecyclerView if necessary
-            }, 1000) // 2-second delay before removing cards
+                closeAllCardsAndReshuffle()
 
+                isCardClickable = true
+            }, 1000)
         } else {
-            // Cards do not match, flip them back after a delay
+            updateRecyclerView()
+
             Handler(Looper.getMainLooper()).postDelayed({
                 firstCard.isFaceUp = false
                 secondCard.isFaceUp = false
                 adapter.notifyItemChanged(firstCardIndex)
                 adapter.notifyItemChanged(secondCardIndex)
-            }, 1000) // 1-second delay before flipping them back
+                isCardClickable = true
+            }, 1000)
         }
     }
+    private fun closeAllCardsAndReshuffle() {
+        updateRecyclerView()
+        // Close all remaining unmatched cards
+        for (i in cards.indices) {
+            val card = cards[i]
+            if (!card.isMatched && card.isFaceUp) {
+                card.isFaceUp = false
+                adapter.notifyItemChanged(i)
+            }
+        }
+        cards.shuffle()
+        adapter.notifyDataSetChanged()
+    }
+
+
+    @SuppressLint("MissingInflatedId")
+    private fun onGameFinished(timeUsed: String) {
+        if (!isAdded || activity == null) {
+            // If the fragment is not attached, don't proceed with showing dialog or navigation
+            return
+        }
+
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = layoutInflater
+        val binding = DialogEnterNameBinding.inflate(inflater)
+        builder.setView(binding.root)
+
+        // Set the text for the views using View Binding
+        binding.pointsTextView.text = "Points: $points"
+        binding.hintUsedTextView.text = "Hints Used: $hints"
+        binding.timerText.text = "Time Used: $timeUsed"
+
+        val dialog = builder.create()
+
+        // Handle submit button click
+        binding.buttonSubmit.setOnClickListener {
+            val playerName = binding.editTextPlayerName.text.toString()
+
+            if (playerName.isBlank()) {
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Please enter your name to continue.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Save leaderboard if name is valid
+                saveLeaderboard(playerName, timeUsed)
+                if (isAdded) {
+                    findNavController().navigateUp()
+                }
+                dialog.dismiss()
+            }
+        }
+
+        if (isAdded && !dialog.isShowing) {
+            dialog.show()
+        }
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        countDownTimer?.cancel()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        countDownTimer?.cancel()
+    }
+    private fun saveLeaderboard(userName: String, timeUsed: String) {
+        val timeStamp = System.currentTimeMillis()
+        val leaderboardData = hashMapOf(
+            "name" to userName,
+            "points" to points.toString(),
+            "hintsUsed" to hints.toString(),
+            "timeRemaining" to timeUsed.toString(),
+            "level" to "hard"
+        )
+        val db = FirebaseFirestore.getInstance()
+        db.collection("leaderBoards")
+            .document(timeStamp.toString())
+            .set(leaderboardData)
+            .addOnSuccessListener {
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Your score has been Uploaded!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { e ->
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Error saving score: $e", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+
 }
