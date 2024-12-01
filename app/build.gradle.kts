@@ -87,4 +87,5 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
+    implementation ("com.github.mreram:showcaseview:1.4.1")
 }

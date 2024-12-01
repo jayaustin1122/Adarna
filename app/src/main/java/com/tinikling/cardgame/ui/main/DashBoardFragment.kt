@@ -1,15 +1,18 @@
 package com.tinikling.cardgame.ui.main
 
 import android.app.AlertDialog
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -22,6 +25,10 @@ import com.tinikling.cardgame.ui.multiplayer.MultiPlayerFragment
 import com.tinikling.cardgame.utils.DialogUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import smartdevelop.ir.eram.showcaseviewlib.GuideView
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
+import smartdevelop.ir.eram.showcaseviewlib.config.Gravity
+import smartdevelop.ir.eram.showcaseviewlib.config.PointerType
 
 
 class DashBoardFragment : Fragment() {
@@ -41,9 +48,27 @@ class DashBoardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playGif()
+
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val areGuidesShown = sharedPreferences.getBoolean("areGuidesShown", false)
+        if (!areGuidesShown) {
+            showGuide()
+        }
         binding.newRunButton.setOnClickListener {
             showDialog()
         }
+        binding.sound.setOnClickListener {
+            if (mediaPlayer?.isPlaying == true) {
+                mediaPlayer?.pause()
+                binding.sound.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.mute))
+            } else {
+
+                mediaPlayer?.start()
+                binding.sound.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.sound))
+            }
+        }
+
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.maps)
         mediaPlayer?.isLooping = true // To loop the music
         mediaPlayer?.start()
@@ -166,4 +191,75 @@ class DashBoardFragment : Fragment() {
 
         defendDialog.show()
     }
+    private fun showGuide() {
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+
+        val builder = GuideView.Builder(this@DashBoardFragment.requireContext())
+            .setTitle("Single Player")
+            .setContentText("This is where you can Play Different levels Easy, Medium, Hard")
+            .setGravity(Gravity.center)
+            .setDismissType(DismissType.anywhere)
+            .setPointerType(PointerType.circle)
+            .setTargetView(binding.newRunButton)
+            .setGuideListener { view: View ->
+                showGuide2()
+            }
+
+        val guideView = builder.build()
+        guideView.show()
+        sharedPreferences.edit().putBoolean("areGuidesShown", true).apply()
+
+    }
+
+    private fun showGuide2() {
+
+        val builder = GuideView.Builder(this@DashBoardFragment.requireContext())
+            .setTitle("MultiPlayer")
+            .setContentText("This is where you can Play with Your Friends")
+            .setGravity(Gravity.center)
+            .setDismissType(DismissType.anywhere)
+            .setPointerType(PointerType.circle)
+            .setTargetView(binding.continueButton)
+            .setGuideListener { view: View ->
+                showGuide3()
+            }
+
+        val guideView = builder.build()
+        guideView.show()
+    }
+
+    private fun showGuide3() {
+
+        val builder = GuideView.Builder(this@DashBoardFragment.requireContext())
+            .setTitle("Leaderboards")
+            .setContentText("This is where you can see All players Scores")
+            .setGravity(Gravity.center)
+            .setDismissType(DismissType.anywhere)
+            .setPointerType(PointerType.circle)
+            .setTargetView(binding.exitButton)
+            .setGuideListener { view: View ->
+                showGuide4()
+            }
+
+        val guideView = builder.build()
+        guideView.show()
+    }
+    private fun showGuide4() {
+
+        val builder = GuideView.Builder(this@DashBoardFragment.requireContext())
+            .setTitle("Music")
+            .setContentText("This is where you can On or Off Music")
+            .setGravity(Gravity.center)
+            .setDismissType(DismissType.anywhere)
+            .setPointerType(PointerType.circle)
+            .setTargetView(binding.sound)
+            .setGuideListener { view: View ->
+
+            }
+
+        val guideView = builder.build()
+        guideView.show()
+    }
+
 }
