@@ -41,6 +41,36 @@ class HardFragment : Fragment() {
         // Inflate the layout for this fragment
         return binding.root
     }
+    private fun callQoutes() {
+        val matchMessage = binding.qoutes
+
+        // List of trivia facts about Ibong Adarna
+        val trivia = listOf(
+            "Trivia: The *Ibong Adarna* is an epic that has been passed down through generations and remains one of the most popular works in Filipino literature.",
+            "Did you know? The *Ibong Adarna* is a symbol of hope and healing in Filipino culture, as its song is said to cure even the most incurable diseases.",
+            "Trivia: The *Ibong Adarna* is known for its enchanting song, which could make anyone who hears it fall asleep for seven days and nights.",
+            "Did you know? The epic was originally written in Spanish by Fray Francisco de la Cruz and was later translated into Tagalog.",
+            "Trivia: *Ibong Adarna* was a favorite subject of Filipino theater productions, especially during the 20th century.",
+            "Did you know? The story's three princes had to face different trials to find the bird: Don Pedro was the first to try and fail, Don Diego was the second, and only Don Juan succeeded in capturing the bird.",
+            "Trivia: The *Ibong Adarna* has inspired various adaptations in books, plays, and films, becoming a cornerstone of Filipino storytelling."
+        )
+
+        // Select a random trivia
+        val selectedTrivia = trivia.random()
+
+        // Display the trivia
+        matchMessage.text = "Trivia: $selectedTrivia"
+        matchMessage.visibility = View.VISIBLE
+
+        // Apply animation to the text view
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
+        matchMessage.startAnimation(animation)
+
+        // Hide the trivia after 1.5 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            matchMessage.visibility = View.GONE
+        }, 5000)
+    }
 
 
     @SuppressLint("SetTextI18n")
@@ -201,6 +231,7 @@ class HardFragment : Fragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             matchMessage.visibility = View.GONE
+            callQoutes()
         }, 1500)
     }
 

@@ -212,6 +212,7 @@ class AverageFragment : Fragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             matchMessage.visibility = View.GONE
+            callQoutes()
         }, 1500)
     }
 
@@ -231,6 +232,36 @@ class AverageFragment : Fragment() {
                 }
             }
         }
+    }
+    private fun callQoutes() {
+        val matchMessage = binding.qoutes
+
+        // List of trivia facts about Ibong Adarna in Tagalog
+        val trivia = listOf(
+            "Trivia: Ang *Ibong Adarna* ay isang epikong Pilipino na kwento ng tatlong prinsipe at ang kanilang paghahanap sa mahiwagang ibon na may kakayahang magpagaling.",
+            "Alam mo ba? Ang awit ng *Ibong Adarna* ay may kakayahang magpapatulog sa sinumang makakarinig nito sa loob ng pitong araw at pitong gabi.",
+            "Trivia: Ang *Ibong Adarna* ay isa sa mga pinakasikat na akdang pampanitikan sa Pilipinas at isang mahalagang bahagi ng kulturang Pilipino.",
+            "Alam mo ba? Ang *Ibong Adarna* ay orihinal na isinulat sa Kastila at isinalin sa Tagalog noong mga huling taon ng ika-19 na siglo.",
+            "Trivia: Ang mga prinsipe ng *Ibong Adarna* ay dumaan sa iba't ibang pagsubok bago nila matagpuan ang ibon, at tanging si Don Juan lamang ang nagtagumpay.",
+            "Alam mo ba? Ang *Ibong Adarna* ay ginagamit bilang isang simbolo ng pag-asa at pagpapagaling sa maraming aspeto ng kulturang Pilipino.",
+            "Trivia: Sa maraming adaptasyon ng *Ibong Adarna*, ang kwento ay isinapelikula at ipinalabas sa teatro sa iba't ibang panahon."
+        )
+
+        // Select a random trivia
+        val selectedTrivia = trivia.random()
+
+        // Display the trivia
+        matchMessage.text = "Trivia: $selectedTrivia"
+        matchMessage.visibility = View.VISIBLE
+
+        // Apply animation to the text view
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
+        matchMessage.startAnimation(animation)
+
+        // Hide the trivia after 1.5 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            matchMessage.visibility = View.GONE
+        }, 4000)
     }
 
     private fun shakeCardAtIndex(index: Int) {

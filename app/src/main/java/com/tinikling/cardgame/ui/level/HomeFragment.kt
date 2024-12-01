@@ -79,7 +79,6 @@ class HomeFragment : Fragment() {
             Card("Ermitanyo", id = R.drawable.ermitanyo, description = "", 35),
 //            Card("", id = null, description = "Sino ang hari ng Berbanya sa simula ng kwento?", 15),
 //            Card("Haring Fernando", id = R.drawable.fernando, description = "Sino ang hari ng Berbanya sa simula ng kwento?", 15),
-
             Card("", id = null, description = "Ang hayop na nakatulong kay Don Juan sa pagkuha ng Ibong Adarna", 14),
             Card("Agila", id = R.drawable.agila, description = "Ang hayop na nakatulong kay Don Juan sa pagkuha ng Ibong Adarna", 14),
 
@@ -202,6 +201,7 @@ class HomeFragment : Fragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             matchMessage.visibility = View.GONE
+            callQoutes()
         }, 1500)
     }
 
@@ -272,6 +272,27 @@ class HomeFragment : Fragment() {
             }, 1000)
         }
     }
+
+    private fun callQoutes() {
+        val matchMessage = binding.qoutes
+        val trivia = listOf(
+            "Trivia: The *Ibong Adarna* is a Filipino epic about a magical bird that can heal any sickness with its song.",
+            "Did you know? The *Ibong Adarna* story involves three princes—Don Pedro, Don Diego, and Don Juan—who embark on a journey to capture the bird.",
+            "Trivia: The *Ibong Adarna* is said to be so powerful that its song could cure their father, King Salermo, who was gravely ill.",
+            "Did you know? The *Ibong Adarna* lives in the mystical Mt. Tabor, and its song is so beautiful it can heal and enchant anyone who hears it.",
+            "Trivia: The *Ibong Adarna* was captured after the third prince, Don Juan, faced numerous challenges, including being betrayed by his brothers."
+        )
+        val selectedTrivia = trivia.random()
+        matchMessage.text = "Trivia: $selectedTrivia"
+        matchMessage.visibility = View.VISIBLE
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
+        matchMessage.startAnimation(animation)
+        Handler(Looper.getMainLooper()).postDelayed({
+            matchMessage.visibility = View.GONE
+        }, 4000)
+    }
+
+
     private fun closeAllCardsAndReshuffle() {
         updateRecyclerView()
         // Close all remaining unmatched cards
