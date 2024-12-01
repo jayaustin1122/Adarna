@@ -2,6 +2,7 @@ package com.tinikling.cardgame.ui.level
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -143,15 +144,26 @@ class AverageFragment : Fragment() {
                 }
                 findNavController().navigateUp()
                 onGameFinished(timeUsed)
+                playMatchSoundGameOver()
             }
         }
         countDownTimer.start()
     }
-
+    private fun playMatchSoundWinner() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.winner)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
 
     private fun updateRecyclerView() {
         if (cards.isEmpty()) {
             onGameFinished(timeUsed)
+            playMatchSoundWinner()
         } else {
             adapter.notifyDataSetChanged()
         }
@@ -238,6 +250,7 @@ class AverageFragment : Fragment() {
             firstCard.isMatched = true
             secondCard.isMatched = true
             points += 1
+            playMatchSound()
             binding.points.text = "Points $points"
             showMatchMessage()
             Toast.makeText(requireContext(), "Match found! Points: $points", Toast.LENGTH_SHORT).show()
@@ -359,6 +372,25 @@ class AverageFragment : Fragment() {
                 }
             }
     }
-
+    private fun playMatchSound() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.effectmatch)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
+    private fun playMatchSoundGameOver() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.timeout)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
 
 }

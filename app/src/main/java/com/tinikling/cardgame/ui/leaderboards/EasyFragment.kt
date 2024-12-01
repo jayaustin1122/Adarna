@@ -1,6 +1,7 @@
 package com.tinikling.cardgame.ui.leaderboards
 
 import android.app.AlertDialog
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -114,6 +115,7 @@ class EasyFragment : Fragment() {
             0
         }
     }
+
 
     // Function to show a loading dialog
     private fun showLoadingDialog() {

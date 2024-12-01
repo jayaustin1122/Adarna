@@ -2,6 +2,7 @@ package com.tinikling.cardgame.ui.multiplayer
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -102,6 +103,7 @@ class MultiPlayerFragment : Fragment() {
                 // Update points after turn ends and switch to next player
                 endPlayerTurn()
                 shakeRecyclerView()
+                playMatchSoundGameOver()
             }
         }
         turnTimer.start()
@@ -173,7 +175,7 @@ class MultiPlayerFragment : Fragment() {
             secondCard.isMatched = true
             points += 1
             playerPoints[playerList[currentPlayerIndex]] = playerPoints.getOrDefault(playerList[currentPlayerIndex], 0) + 1
-
+            playMatchSound()
             Toast.makeText(requireContext(), "Match found! Points: $points", Toast.LENGTH_SHORT).show()
             updateRecyclerView()
             addNewCardPair()
@@ -396,5 +398,25 @@ class MultiPlayerFragment : Fragment() {
         super.onStop()
         gameTimer.cancel()
         turnTimer.cancel()
+    }
+    private fun playMatchSound() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.effectmatch)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
+    private fun playMatchSoundGameOver() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.timeout)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
     }
 }

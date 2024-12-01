@@ -69,7 +69,7 @@ class DashBoardFragment : Fragment() {
             }
         }
 
-        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.maps)
+        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.dashboard)
         mediaPlayer?.isLooping = true // To loop the music
         mediaPlayer?.start()
         binding.exitButton.setOnClickListener {
@@ -90,44 +90,64 @@ class DashBoardFragment : Fragment() {
         // Inflate the dialog's layout with ViewBinding
         val binding = DialogPlayerInputBinding.inflate(LayoutInflater.from(requireContext()))
 
+        // Create an AlertDialog builder and set the custom view
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Enter Player Names and Game Duration")
-            .setView(binding.root) // Set the root of the binding as the view for the dialog
-            .setPositiveButton("Start Game") { dialogInterface, _ ->
-                val playerNames = binding.playerNamesEditText.text.toString()
-                val gameDuration = binding.gameDurationEditText.text.toString()
+            .setView(binding.root) // Set the custom view
+            .create() // Create the dialog instance
 
-                if (playerNames.isNotEmpty() && gameDuration.isNotEmpty()) {
-                    val playerList = playerNames.split(",").map { it.trim() }
-                    val durationInMinutes = gameDuration.toIntOrNull()
+        // Set cancel button listener
+        binding.cancel.setOnClickListener {
+            dialog.dismiss() // Corrected the dismiss method
+        }
 
-                    if (durationInMinutes != null && durationInMinutes >= 5) {
-                        // Create a bundle to pass the data
-                        val bundle = Bundle().apply {
-                            putStringArray("playerNames", playerList.toTypedArray())
-                            putInt("gameDuration", durationInMinutes)
-                        }
-                        loadingDialog = DialogUtils.showLoading(requireActivity())
-                        loadingDialog.show()
-                        lifecycleScope.launch {
-                            val multiPlayerFragment = MultiPlayerFragment()
-                            multiPlayerFragment.arguments = bundle
-                            findNavController().navigate(R.id.multiPlayerFragment, bundle)
-                            loadingDialog.dismiss()
-                        }
+        // Set start button listener
+        binding.start.setOnClickListener {
+            val playerNames = binding.playerNamesEditText.text.toString()
+            val gameDuration = binding.gameDurationEditText.text.toString()
 
-                    } else {
-                        Toast.makeText(requireContext(), "Please enter a game duration of 5 sec or more.", Toast.LENGTH_SHORT).show()
+            if (playerNames.isNotEmpty() && gameDuration.isNotEmpty()) {
+                val playerList = playerNames.split(",").map { it.trim() }
+                val durationInMinutes = gameDuration.toIntOrNull()
+
+                if (durationInMinutes != null && durationInMinutes >= 5) {
+                    // Create a bundle to pass the data
+                    val bundle = Bundle().apply {
+                        putStringArray("playerNames", playerList.toTypedArray())
+                        putInt("gameDuration", durationInMinutes)
                     }
+
+                    // Show loading dialog
+                    loadingDialog = DialogUtils.showLoading(requireActivity())
+                    loadingDialog.show()
+
+                    // Navigate to the MultiPlayerFragment
+                    lifecycleScope.launch {
+                        val multiPlayerFragment = MultiPlayerFragment()
+                        multiPlayerFragment.arguments = bundle
+                        findNavController().navigate(R.id.multiPlayerFragment, bundle)
+                        loadingDialog.dismiss() // Dismiss loading dialog after navigation
+                    }
+
+                    // Dismiss the input dialog
+                    dialog.dismiss()
+
                 } else {
-                    Toast.makeText(requireContext(), "Please enter both names and game duration.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Please enter a game duration of 5 minutes or more.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
-                dialogInterface.dismiss()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Please enter both player names and game duration.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            .setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.dismiss() }
-            .create()
+        }
 
+        // Show the dialog
         dialog.show()
     }
 

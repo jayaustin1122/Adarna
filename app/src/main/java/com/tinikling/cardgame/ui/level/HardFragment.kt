@@ -2,6 +2,7 @@ package com.tinikling.cardgame.ui.level
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -141,6 +142,7 @@ class HardFragment : Fragment() {
                 }
                 findNavController().navigateUp()
                 onGameFinished(timeUsed)
+                playMatchSoundGameOver()
             }
         }
         countDownTimer.start()
@@ -150,6 +152,7 @@ class HardFragment : Fragment() {
     private fun updateRecyclerView() {
         if (cards.isEmpty()) {
             onGameFinished(timeUsed)
+            playMatchSoundWinner()
         } else {
             adapter.notifyDataSetChanged()
         }
@@ -226,7 +229,16 @@ class HardFragment : Fragment() {
             cardView.startAnimation(shakeAnimation)
         }
     }
-
+    private fun playMatchSoundWinner() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.winner)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
     private fun checkForMatch(firstCardIndex: Int, secondCardIndex: Int) {
         val firstCard = cards[firstCardIndex]
         val secondCard = cards[secondCardIndex]
@@ -236,6 +248,7 @@ class HardFragment : Fragment() {
             firstCard.isMatched = true
             secondCard.isMatched = true
             points += 1
+            playMatchSound()
             binding.points.text = "Points $points"
             showMatchMessage()
             Toast.makeText(requireContext(), "Match found! Points: $points", Toast.LENGTH_SHORT).show()
@@ -281,7 +294,26 @@ class HardFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-
+    private fun playMatchSound() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.effectmatch)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
+    private fun playMatchSoundGameOver() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.timeout)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
     @SuppressLint("MissingInflatedId")
     private fun onGameFinished(timeUsed: String) {
         if (!isAdded || activity == null) {
