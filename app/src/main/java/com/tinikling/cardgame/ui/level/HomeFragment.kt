@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -296,7 +297,7 @@ class HomeFragment : Fragment() {
         // Set the text for the views using View Binding
         binding.pointsTextView.text = "Points: $points"
         binding.hintUsedTextView.text = "Hints Used: $hints"
-        binding.timerText.text = "Time Used: $timeUsed"
+        binding.timerText.text = "Time Ramaining: $timeUsed"
 
         val dialog = builder.create()
 
@@ -335,25 +336,37 @@ class HomeFragment : Fragment() {
     }
     private fun saveLeaderboard(userName: String, timeUsed: String) {
         val timeStamp = System.currentTimeMillis()
+        // Prepare the leaderboard data
         val leaderboardData = hashMapOf(
             "name" to userName,
             "points" to points.toString(),
             "hintsUsed" to hints.toString(),
-            "timeRemaining" to timeUsed.toString(),
+            "timeRemaining" to timeUsed,
             "level" to "easy"
         )
+
+        // Log the data that will be uploaded
+        Log.d("Leaderboard", "Saving data: $leaderboardData")
+
+        // Get Firestore instance
         val db = FirebaseFirestore.getInstance()
+
+        // Save the data with a document ID based on the timestamp
         db.collection("leaderBoards")
             .document(timeStamp.toString())
             .set(leaderboardData)
             .addOnSuccessListener {
+                Log.d("Leaderboard", "Data successfully uploaded with timestamp: $timeStamp")
+
                 if (isAdded) {
-                    Toast.makeText(requireContext(), "Your score has been Uploaded!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Your score has been uploaded!", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { e ->
+                Log.e("Leaderboard", "Error saving score: ${e.message}", e)
+
                 if (isAdded) {
-                    Toast.makeText(requireContext(), "Error saving score: $e", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error saving score: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }

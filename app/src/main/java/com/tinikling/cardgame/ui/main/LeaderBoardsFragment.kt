@@ -10,18 +10,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.firestore.FirebaseFirestore
+import com.tinikling.cardgame.R
 import com.tinikling.cardgame.adapter.LeaderboardAdapter
+import com.tinikling.cardgame.adapter.MyFragmentStateAdapter
 import com.tinikling.cardgame.databinding.FragmentLeaderBoardsBinding
 import com.tinikling.cardgame.models.LeaderboardEntry
 
 class LeaderBoardsFragment : Fragment() {
 
     private lateinit var binding: FragmentLeaderBoardsBinding
-    private lateinit var leaderboardAdapter: LeaderboardAdapter
-    private val leaderboardEntries = mutableListOf<LeaderboardEntry>()
-    private val timeoutHandler = Handler(Looper.getMainLooper())
-    private var isDataFetched = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,85 +34,26 @@ class LeaderBoardsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val tabLayout = binding.tabLayout
+        val viewPager2 =binding.pager
+        val myAdapter = MyFragmentStateAdapter(requireActivity())
+        viewPager2.adapter = myAdapter
 
-        setupRecyclerView()
-        showLoadingDialog() // Show loading dialog
-        fetchLeaderboardData()
-
-        // Set a timeout for 5 seconds to check if data has been fetched
-        timeoutHandler.postDelayed({
-            if (!isDataFetched) {
-                showNoInternetDialog() // Show the "connect to internet" dialog
-            }
-        }, 5000)
-    }
-
-    private fun setupRecyclerView() {
-        leaderboardAdapter = LeaderboardAdapter(leaderboardEntries)
-        binding.leaderboardRecyclerView.adapter = leaderboardAdapter
-        binding.leaderboardRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-    }
-
-    private fun fetchLeaderboardData() {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("leaderBoards")
-            .get()
-            .addOnSuccessListener { result ->
-                leaderboardEntries.clear()
-                for (document in result) {
-                    val entry = document.toObject(LeaderboardEntry::class.java)
-                    leaderboardEntries.add(entry)
+        TabLayoutMediator(tabLayout, viewPager2) { tab: TabLayout.Tab, position: Int ->
+            when (position) {
+                0 -> {
+                    tab.text = "Easy"
                 }
-                leaderboardEntries.sortWith(compareByDescending<LeaderboardEntry> { it.points.toInt() }
-                    .thenBy { parseTime(it.timeRemaining) })
-                leaderboardAdapter.notifyDataSetChanged()
-                dismissLoadingDialog() // Dismiss loading dialog
-                isDataFetched = true // Mark data as fetched
+                1 -> {
+                    tab.text = "Medium"
+                }
+                2 -> {
+                    tab.text = "Hard"
+                }
             }
-            .addOnFailureListener { exception ->
-                dismissLoadingDialog() // Dismiss loading dialog on failure
-                Toast.makeText(requireContext(), "Error fetching data: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
+        }.attach()
+
     }
 
-    private fun parseTime(time: String): Int {
-        val parts = time.split(":")
-        return if (parts.size == 2) {
-            try {
-                val minutes = parts[0].toInt()
-                val seconds = parts[1].toInt()
-                minutes * 60 + seconds
-            } catch (e: NumberFormatException) {
-                0
-            }
-        } else {
-            0
-        }
-    }
 
-    // Function to show a loading dialog
-    private fun showLoadingDialog() {
-        binding.progressBar.visibility = View.VISIBLE // Show ProgressBar
-    }
-
-    // Function to dismiss the loading dialog
-    private fun dismissLoadingDialog() {
-        binding.progressBar.visibility = View.GONE // Hide ProgressBar
-    }
-
-    // Function to show a "No internet" dialog if data is not fetched in 5 seconds
-    private fun showNoInternetDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("No Internet Connection")
-        builder.setMessage("Please connect to the internet to view the leaderboards.")
-        builder.setPositiveButton("Retry") { dialog, _ ->
-            dialog.dismiss()
-            showLoadingDialog() // Show loading dialog again
-            fetchLeaderboardData() // Retry fetching data
-        }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-        builder.show()
-    }
 }

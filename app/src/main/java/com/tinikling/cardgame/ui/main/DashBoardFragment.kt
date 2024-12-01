@@ -10,18 +10,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
 import com.tinikling.cardgame.R
 import com.tinikling.cardgame.databinding.DialogPlayerInputBinding
 import com.tinikling.cardgame.databinding.DialogQuestionBinding
 import com.tinikling.cardgame.databinding.FragmentDashBoardBinding
 import com.tinikling.cardgame.ui.multiplayer.MultiPlayerFragment
+import com.tinikling.cardgame.utils.DialogUtils
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class DashBoardFragment : Fragment() {
     private lateinit var binding : FragmentDashBoardBinding
     private var mediaPlayer: MediaPlayer? = null
+    private lateinit var loadingDialog: SweetAlertDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,8 +48,15 @@ class DashBoardFragment : Fragment() {
         mediaPlayer?.isLooping = true // To loop the music
         mediaPlayer?.start()
         binding.exitButton.setOnClickListener {
-            findNavController().navigate(R.id.leaderBoardsFragment)
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            lifecycleScope.launch {
+                delay(2000)
+                findNavController().navigate(R.id.leaderBoardsFragment)
+                loadingDialog.dismiss()
+            }
         }
+
         binding.continueButton.setOnClickListener {
             showPlayerInputDialog()
         }
@@ -69,9 +82,15 @@ class DashBoardFragment : Fragment() {
                             putStringArray("playerNames", playerList.toTypedArray())
                             putInt("gameDuration", durationInMinutes)
                         }
-                        val multiPlayerFragment = MultiPlayerFragment()
-                        multiPlayerFragment.arguments = bundle
-                        findNavController().navigate(R.id.multiPlayerFragment, bundle)
+                        loadingDialog = DialogUtils.showLoading(requireActivity())
+                        loadingDialog.show()
+                        lifecycleScope.launch {
+                            val multiPlayerFragment = MultiPlayerFragment()
+                            multiPlayerFragment.arguments = bundle
+                            findNavController().navigate(R.id.multiPlayerFragment, bundle)
+                            loadingDialog.dismiss()
+                        }
+
                     } else {
                         Toast.makeText(requireContext(), "Please enter a game duration of 5 sec or more.", Toast.LENGTH_SHORT).show()
                     }
@@ -114,16 +133,35 @@ class DashBoardFragment : Fragment() {
             .create()
 
         defendDialogBinding.answerButton1.setOnClickListener {
-            findNavController().navigate(R.id.homeFragment)
-            defendDialog.dismiss()
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            lifecycleScope.launch {
+                delay(2000)
+                findNavController().navigate(R.id.homeFragment)
+                defendDialog.dismiss()
+                loadingDialog.dismiss()
+            }
+
         }
         defendDialogBinding.answerButton2.setOnClickListener {
-            findNavController().navigate(R.id.averageFragment)
-            defendDialog.dismiss()
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            lifecycleScope.launch {
+                delay(2000)
+                findNavController().navigate(R.id.averageFragment)
+                defendDialog.dismiss()
+                loadingDialog.dismiss()
+            }
         }
         defendDialogBinding.answerButton3.setOnClickListener {
-            findNavController().navigate(R.id.hardFragment)
-            defendDialog.dismiss()
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            lifecycleScope.launch {
+                delay(2000)
+                findNavController().navigate(R.id.averageFragment)
+                defendDialog.dismiss()
+                loadingDialog.dismiss()
+            }
         }
 
         defendDialog.show()

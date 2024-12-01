@@ -297,7 +297,7 @@ class HardFragment : Fragment() {
         // Set the text for the views using View Binding
         binding.pointsTextView.text = "Points: $points"
         binding.hintUsedTextView.text = "Hints Used: $hints"
-        binding.timerText.text = "Time Used: $timeUsed"
+        binding.timerText.text = "Time Remaining: $timeUsed"
 
         val dialog = builder.create()
 

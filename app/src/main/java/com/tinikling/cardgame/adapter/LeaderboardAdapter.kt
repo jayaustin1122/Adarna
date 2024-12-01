@@ -1,16 +1,14 @@
 package com.tinikling.cardgame.adapter
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.tinikling.cardgame.R
 import com.tinikling.cardgame.databinding.ItemLeaderboardBinding
-import com.tinikling.cardgame.models.LeaderboardEntry
 
-class LeaderboardAdapter(private val leaderboardEntries: List<LeaderboardEntry>) :
+class LeaderboardAdapter(private val leaderboardEntries: List<Map<String, Any>>) :
     RecyclerView.Adapter<LeaderboardAdapter.LeaderboardViewHolder>() {
 
     // ViewHolder class with ViewBinding
@@ -27,10 +25,15 @@ class LeaderboardAdapter(private val leaderboardEntries: List<LeaderboardEntry>)
     override fun onBindViewHolder(holder: LeaderboardViewHolder, position: Int) {
         val entry = leaderboardEntries[position]
         holder.binding.apply {
+            // Retrieve values from the map
+            val name = entry["name"] as? String ?: "Unknown"
+            val points = entry["points"] as? String ?: ""
+            val timeRemaining = entry["timeRemaining"] as? String ?: "0"
+
             rankTextView.text = (position + 1).toString()  // Rank starts from 1
-            nameTextView.text = entry.name
-            pointsTextView.text = entry.points
-            timeUsedTextView.text = "${entry.timeRemaining}s"
+            nameTextView.text = name
+            pointsTextView.text = points.toString()
+            timeUsedTextView.text = "${timeRemaining}s"
 
             // Set background color based on rank
             when (position) {
