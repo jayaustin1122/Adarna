@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.tinikling.cardgame.R
 import com.tinikling.cardgame.adapter.CardAdapter
 import com.tinikling.cardgame.databinding.DialogEnterNameBinding
+import com.tinikling.cardgame.databinding.DialogendgameBinding
 import com.tinikling.cardgame.databinding.FragmentMultiPlayerBinding
 import com.tinikling.cardgame.models.Card
 
@@ -36,7 +37,7 @@ class MultiPlayerFragment : Fragment() {
     private var playerPoints = mutableMapOf<String, Int>()
     private var currentPlayerIndex = 0
     private var turnDuration = 0 // 10 seconds per player turn
-    private val gameDuration = 60000L // 1 minute total game time
+    private val gameDuration = 30000L // 1 minute total game time
     private lateinit var gameTimer: CountDownTimer
     private lateinit var turnTimer: CountDownTimer
 
@@ -224,7 +225,7 @@ class MultiPlayerFragment : Fragment() {
 
         val newCardPair = mutableListOf(
             Card("", id = null, description = "Ilang beses nagpalit ng kulay ang Ibong Adarna habang kumakanta?", 34),
-            Card("Pito", id = R.drawable.bg, description = "", 34),
+            Card("Pito", id = R.drawable.pito, description = "", 34),
 
             Card("", id = null, description = "Sumisimbolo ng kapahamakan ng isang tao", 36),
             Card("Singsing", id = R.drawable.singsing, description = "", 36),
@@ -365,26 +366,35 @@ class MultiPlayerFragment : Fragment() {
         }
     }
     private fun endGame() {
+        findNavController().navigateUp()
+        val highestScore = playerPoints.values.maxOrNull() ?: 0
+        val winners = playerPoints.filter { it.value == highestScore }.keys
+
         var scoresMessage = "Game Over!\n"
         playerPoints.forEach { (player, score) ->
             scoresMessage += "$player: $score points\n"
-            Log.d("MultiPlayerFragment", "Player: $player, Score: $score")
         }
-        Log.d("MultiPlayerFragment", "Game Over! Scores:\n$scoresMessage")
 
-        // Create an AlertDialog to display the scores
-        val builder = AlertDialog.Builder(requireContext())
-            .setTitle("Game Over")
-            .setMessage(scoresMessage)
-            .setPositiveButton("OK") { dialog, _ ->
-                // Navigate back after the player acknowledges the game over
-                findNavController().navigateUp()
-                dialog.dismiss()
-            }
+        scoresMessage += if (winners.size > 1) {
+            "\nWinners: ${winners.joinToString(", ")} with $highestScore points!"
+        } else {
+            "\nWinner: ${winners.first()} with $highestScore points!"
+        }
 
-        // Show the AlertDialog
-        builder.create().show()
+        val binding = DialogendgameBinding.inflate(LayoutInflater.from(requireContext()))
+        binding.winners.text = scoresMessage
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(binding.root)
+            .create()
+
+        binding.okay.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
+
 
 
 

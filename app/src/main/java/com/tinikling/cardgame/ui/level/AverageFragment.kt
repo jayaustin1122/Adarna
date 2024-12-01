@@ -392,5 +392,14 @@ class AverageFragment : Fragment() {
             }
         }, 2000)
     }
+    private fun play() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.play)
+        mediaPlayer.start()
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+
+    }
 
 }

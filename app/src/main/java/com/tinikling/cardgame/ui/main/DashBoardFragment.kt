@@ -85,6 +85,10 @@ class DashBoardFragment : Fragment() {
         binding.continueButton.setOnClickListener {
             showPlayerInputDialog()
         }
+        binding.exit.setOnClickListener {
+            requireActivity().finishAffinity()
+        }
+
     }
     private fun showPlayerInputDialog() {
         // Inflate the dialog's layout with ViewBinding
@@ -134,7 +138,7 @@ class DashBoardFragment : Fragment() {
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        "Please enter a game duration of 5 minutes or more.",
+                        "Please enter a game duration of 5 seconds or more.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
