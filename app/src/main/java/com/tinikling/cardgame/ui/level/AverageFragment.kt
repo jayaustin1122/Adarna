@@ -70,30 +70,10 @@ class AverageFragment : Fragment() {
         // Example card data with nullable images and descriptions
         val cardData = listOf(
 
-            //scene
-//            Card("", id = null, description = "Ang pagpapagaling na awit ng Ibong Adarna para kay Haring Fernando.", 13),
-//            Card("Mga Ibon Kumakanta", id = R.drawable.birdsinging, description = "", 13),
-
             Card("", id = null, description = "Ano ang papel ni Don Pedro sa kwento ng Ibong Adarna?", 16),
             Card("Kontrabida", id = R.drawable.pedro, description = "Ano ang papel ni Don Pedro sa kwento ng Ibong Adarna?", 16),
-
-
-//            Card("", id = null, description = "Ano ang pangunahing misyon ni Don Juan sa kwento ng Ibong Adarna?", 17),
-//            Card("Hulihin ang Ibong Adarna", id = R.drawable.ico, description = "Ano ang pangunahing misyon ni Don Juan sa kwento ng Ibong Adarna?", 17),
-
             Card("", id = null, description = "Ano ang ginagawa ng Ibong Adarna kapag kumakanta ito?", 18),
             Card("Pinapatulog", id = R.drawable.sleep, description = "Ano ang ginagawa ng Ibong Adarna kapag kumakanta ito?", 18),
-
-//
-//            Card("", id = null, description = "Bakit mahalaga ang papel ni Don Diego sa kwento ng Ibong Adarna?", 19),
-//            Card("Siya ang nagpakita ng malasakit sa kanyang ama", id = R.drawable.diego, description = "Bakit mahalaga ang papel ni Don Diego sa kwento ng Ibong Adarna?", 19),
-
-
-//            Card("", id = null, description = "Paano tinraydor ni Don Pedro si Don Juan matapos mahuli ang Ibong Adarna?", 20),
-//            Card("Sinaktan niya si Don Juan at iniwan sa balon", id = R.drawable.balon, description = "Paano tinraydor ni Don Pedro si Don Juan matapos mahuli ang Ibong Adarna?", 20),
-
-//            Card("", id = null, description = "Ano ang nagiging papel ng Ermitanyo sa buhay ni Don Juan?", 21),
-//            Card("Nagbigay ng payo at mga mahiwagang gamit", id = R.drawable.advice, description = "Ano ang nagiging papel ng Ermitanyo sa buhay ni Don Juan?", 21),
 
             Card("", id = null, description = "Sa kabuuan ng kwento, paano nakatulong ang iba't ibang pantulong na tauhan (tulad ng mga ermitanyo at hayop) sa moral at espiritwal na paglaki ni Don Juan?", 22),
             Card("Tinuruan siya ng kababaang-loob at pagtitiwala sa Diyos", id = R.drawable.believe, description = "Sa kabuuan ng kwento, paano nakatulong ang iba't ibang pantulong na tauhan (tulad ng mga ermitanyo at hayop) sa moral at espiritwal na paglaki ni Don Juan?", 22),
@@ -104,12 +84,8 @@ class AverageFragment : Fragment() {
             Card("", id = null, description = "Ano ang nangyayari sa mga taong nahuhuli ng awit ng Ibong Adarna?", 29),
             Card("Nagiging bato", id = R.drawable.stone, description = "Ano ang nangyayari sa mga taong nahuhuli ng awit ng Ibong Adarna?", 29),
 
-
-//            Card("", id = null, description = "Ano ang pangunahing layunin ng kwento ng Ibong Adarna?", 31),
-//            Card("Ituro ang halaga ng pagtitiis at kabutihan", id = R.drawable.bg, description = "Ano ang pangunahing layunin ng kwento ng Ibong Adarna?", 31),
-
             Card("", id = null, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
-            Card("Puno ng Kabutihan", id = R.drawable.bg, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
+            Card("Puno ng Kabutihan", id = R.drawable.kabutihan, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
 
 
 
@@ -261,7 +237,7 @@ class AverageFragment : Fragment() {
         // Hide the trivia after 1.5 seconds
         Handler(Looper.getMainLooper()).postDelayed({
             matchMessage.visibility = View.GONE
-        }, 4000)
+        }, 5000)
     }
 
     private fun shakeCardAtIndex(index: Int) {

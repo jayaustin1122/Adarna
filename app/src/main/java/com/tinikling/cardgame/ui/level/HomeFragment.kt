@@ -289,7 +289,7 @@ class HomeFragment : Fragment() {
         matchMessage.startAnimation(animation)
         Handler(Looper.getMainLooper()).postDelayed({
             matchMessage.visibility = View.GONE
-        }, 4000)
+        }, 5000)
     }
 
 
