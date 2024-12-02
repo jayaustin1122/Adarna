@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textColorHint="@android:color/darker_gray"
-        android:hint="Enter Player Names (comma-separated)"
+        android:hint="Mga Pangalan (Juan,Pedro)"
         android:inputType="text" />
 
     <EditText
@@ -23,7 +23,7 @@
         android:textColor="@color/white"
         android:textColorHint="@android:color/darker_gray"
         android:layout_height="wrap_content"
-        android:hint="Enter Timer per Player (in seconds)"
+        android:hint="Sigundo ng Manlalaro"
         android:inputType="number" />
 
     <LinearLayout

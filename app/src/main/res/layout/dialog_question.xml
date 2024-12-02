@@ -26,7 +26,7 @@
                 android:shadowDx="2"
                 android:shadowDy="2"
                 android:shadowRadius="3"
-                android:text="Please Select Level"
+                android:text="Pumili ng Antas"
                 android:textSize="32sp" />
 
             <!-- Outer LinearLayout for vertical arrangement of button sets -->

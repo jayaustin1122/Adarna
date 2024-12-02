@@ -66,7 +66,10 @@ class MultiPlayerFragment : Fragment() {
         // Initialize RecyclerView and CardAdapter
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         setupGame()
-        adapter = CardAdapter(cards) { position -> onCardClicked(position) }
+        adapter = CardAdapter(cards) { position ->
+            onCardClicked(position)
+            select()
+        }
         binding.recyclerView.adapter = adapter
 
         // Start the first player's turn timer
@@ -409,8 +412,18 @@ class MultiPlayerFragment : Fragment() {
         gameTimer.cancel()
         turnTimer.cancel()
     }
+    private fun select() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.select)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
     private fun playMatchSound() {
-        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.effectmatch)
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.match)
         mediaPlayer.start()
         Handler(Looper.getMainLooper()).postDelayed({
             if (mediaPlayer.isPlaying) {

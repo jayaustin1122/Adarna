@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:text="Please Enter your name to upload your score."
+        android:text="Ilagay ang iyong Pangalan."
         android:shadowColor="@android:color/black"
         android:shadowDx="2"
         android:shadowDy="2"

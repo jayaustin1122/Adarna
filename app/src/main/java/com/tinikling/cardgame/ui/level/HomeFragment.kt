@@ -68,7 +68,9 @@ class HomeFragment : Fragment() {
                 ).show()
             }
         }
-        adapter = CardAdapter(cards) { position -> onCardClicked(position) }
+        adapter = CardAdapter(cards) { position ->
+            onCardClicked(position)
+            select() }
         binding.recyclerView.adapter = adapter
     }
 
@@ -276,14 +278,14 @@ class HomeFragment : Fragment() {
     private fun callQoutes() {
         val matchMessage = binding.qoutes
         val trivia = listOf(
-            "Trivia: The *Ibong Adarna* is a Filipino epic about a magical bird that can heal any sickness with its song.",
-            "Did you know? The *Ibong Adarna* story involves three princes—Don Pedro, Don Diego, and Don Juan—who embark on a journey to capture the bird.",
-            "Trivia: The *Ibong Adarna* is said to be so powerful that its song could cure their father, King Salermo, who was gravely ill.",
-            "Did you know? The *Ibong Adarna* lives in the mystical Mt. Tabor, and its song is so beautiful it can heal and enchant anyone who hears it.",
-            "Trivia: The *Ibong Adarna* was captured after the third prince, Don Juan, faced numerous challenges, including being betrayed by his brothers."
-        )
+            "Alam mo ba? Ang Ibong Adarna ay may kapangyarihang pagalingin ang kahit anong sakit gamit ang kanyang mahiwagang awit.",
+            "Trivia: Si Don Juan ang prinsipe na matagumpay na nahuli ang Ibong Adarna matapos harapin ang maraming pagsubok.",
+            "Alam mo ba? Ang awit ng Ibong Adarna ay may kakayahang makatulog at gawing bato ang sino mang makarinig nito."
+            ,"Trivia: Bago mahuli ni Don Juan ang Ibong Adarna, kinailangan niyang lagyan ng lambanog ang kanyang katawan upang hindi siya mabato ng awit ng ibon.")
+
+
         val selectedTrivia = trivia.random()
-        matchMessage.text = "Trivia: $selectedTrivia"
+        matchMessage.text = "$selectedTrivia"
         matchMessage.visibility = View.VISIBLE
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
         matchMessage.startAnimation(animation)
@@ -406,7 +408,17 @@ class HomeFragment : Fragment() {
         }, 2000)
     }
     private fun playMatchSound() {
-        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.effectmatch)
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.match)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
+    private fun select() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.select)
         mediaPlayer.start()
         Handler(Looper.getMainLooper()).postDelayed({
             if (mediaPlayer.isPlaying) {

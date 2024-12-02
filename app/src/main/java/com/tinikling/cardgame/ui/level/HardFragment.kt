@@ -46,15 +46,15 @@ class HardFragment : Fragment() {
 
         // List of trivia facts about Ibong Adarna
         val trivia = listOf(
-            "Trivia: The *Ibong Adarna* is an epic that has been passed down through generations and remains one of the most popular works in Filipino literature.",
-            "Did you know? The *Ibong Adarna* is a symbol of hope and healing in Filipino culture, as its song is said to cure even the most incurable diseases.",
-            "Trivia: The *Ibong Adarna* is known for its enchanting song, which could make anyone who hears it fall asleep for seven days and nights.",
-            "Did you know? The epic was originally written in Spanish by Fray Francisco de la Cruz and was later translated into Tagalog.",
-            "Trivia: *Ibong Adarna* was a favorite subject of Filipino theater productions, especially during the 20th century.",
-            "Did you know? The story's three princes had to face different trials to find the bird: Don Pedro was the first to try and fail, Don Diego was the second, and only Don Juan succeeded in capturing the bird.",
-            "Trivia: The *Ibong Adarna* has inspired various adaptations in books, plays, and films, becoming a cornerstone of Filipino storytelling."
+            "Alam mo ba? Ang *Ibong Adarna* ay isang epikong tula na isinulat noong panahon ng Espanyol at nananatiling tanyag sa kulturang Pilipino.",
+            "Trivia: Ang awit ng *Ibong Adarna* ay may kapangyarihang magpagaling ng mga sakit na tila walang lunas.",
+            "Alam mo ba? Ang *Ibong Adarna* ay isa sa mga pinakamahalagang likha sa panitikang Pilipino, na nagpapakita ng mga aral sa buhay at pananampalataya.",
+            "Trivia: Si Fray Francisco de la Cruz ang unang nagsulat ng epiko ng *Ibong Adarna* sa wikang Kastila, bago ito isinalin sa Tagalog.",
+            "Alam mo ba? Ang tatlong prinsipe na sina Don Pedro, Don Diego, at Don Juan ay sumailalim sa iba't ibang pagsubok upang matagpuan ang mahiwagang ibon.",
+            "Trivia: Ang *Ibong Adarna* ay madalas na isinasadula sa mga entablado at pelikula noong ika-20 siglo, at ito'y isang klasikong kuwento na binibigyang buhay ng iba't ibang henerasyon.",
+            "Alam mo ba? Si Don Juan ang tanging prinsipe na nagtagumpay na hulihin ang *Ibong Adarna* matapos mabigo ang kanyang mga kapatid.",
+            "Trivia: Ang kuwento ng *Ibong Adarna* ay nagbibigay ng inspirasyon sa maraming aklat at dula sa kasaysayan ng Pilipinas."
         )
-
         // Select a random trivia
         val selectedTrivia = trivia.random()
 
@@ -94,7 +94,10 @@ class HardFragment : Fragment() {
                 ).show()
             }
         }
-        adapter = CardAdapter(cards) { position -> onCardClicked(position) }
+        adapter = CardAdapter(cards) { position ->
+            onCardClicked(position)
+            select()
+        }
         binding.recyclerView.adapter = adapter
     }
     private fun setupGame() {
@@ -311,6 +314,7 @@ class HardFragment : Fragment() {
             }, 1000)
         }
     }
+
     private fun closeAllCardsAndReshuffle() {
         updateRecyclerView()
         // Close all remaining unmatched cards
@@ -326,7 +330,17 @@ class HardFragment : Fragment() {
     }
 
     private fun playMatchSound() {
-        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.effectmatch)
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.match)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
+    private fun select() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.select)
         mediaPlayer.start()
         Handler(Looper.getMainLooper()).postDelayed({
             if (mediaPlayer.isPlaying) {

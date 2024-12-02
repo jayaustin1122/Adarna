@@ -63,7 +63,10 @@ class AverageFragment : Fragment() {
                 ).show()
             }
         }
-        adapter = CardAdapter(cards) { position -> onCardClicked(position) }
+        adapter = CardAdapter(cards) { position ->
+            onCardClicked(position)
+            select()
+        }
         binding.recyclerView.adapter = adapter
     }
     private fun setupGame() {
@@ -76,7 +79,7 @@ class AverageFragment : Fragment() {
             Card("Pinapatulog", id = R.drawable.sleep, description = "Ano ang ginagawa ng Ibong Adarna kapag kumakanta ito?", 18),
 
             Card("", id = null, description = "Sa kabuuan ng kwento, paano nakatulong ang iba't ibang pantulong na tauhan (tulad ng mga ermitanyo at hayop) sa moral at espiritwal na paglaki ni Don Juan?", 22),
-            Card("Tinuruan siya ng kababaang-loob at pagtitiwala sa Diyos", id = R.drawable.believe, description = "Sa kabuuan ng kwento, paano nakatulong ang iba't ibang pantulong na tauhan (tulad ng mga ermitanyo at hayop) sa moral at espiritwal na paglaki ni Don Juan?", 22),
+            Card("Tiwala sa Diyos", id = R.drawable.believe, description = "Sa kabuuan ng kwento, paano nakatulong ang iba't ibang pantulong na tauhan (tulad ng mga ermitanyo at hayop) sa moral at espiritwal na paglaki ni Don Juan?", 22),
             Card("", id = null, description = "Ano ang kinakanta ng Ibong Adarna upang makapagpagaling ng may sakit?", 28),
             Card("Pitong Awit", id = R.drawable.birdsinging, description = "Ano ang kinakanta ng Ibong Adarna upang makapagpagaling ng may sakit?", 28),
 
@@ -85,7 +88,7 @@ class AverageFragment : Fragment() {
             Card("Nagiging bato", id = R.drawable.stone, description = "Ano ang nangyayari sa mga taong nahuhuli ng awit ng Ibong Adarna?", 29),
 
             Card("", id = null, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
-            Card("Puno ng Kabutihan", id = R.drawable.kabutihan, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
+            Card("Kabutihan", id = R.drawable.kabutihan, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
 
 
 
@@ -380,7 +383,17 @@ class AverageFragment : Fragment() {
             }
     }
     private fun playMatchSound() {
-        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.effectmatch)
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.match)
+        mediaPlayer.start()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        }, 2000)
+    }
+    private fun select() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.select)
         mediaPlayer.start()
         Handler(Looper.getMainLooper()).postDelayed({
             if (mediaPlayer.isPlaying) {

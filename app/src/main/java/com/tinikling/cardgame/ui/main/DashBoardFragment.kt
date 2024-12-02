@@ -138,14 +138,14 @@ class DashBoardFragment : Fragment() {
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        "Please enter a game duration of 5 seconds or more.",
+                        "Dapat 5 sigundo o higit pa",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Please enter both player names and game duration.",
+                    "Mag lagay ng Pangalan at Oras",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -207,7 +207,7 @@ class DashBoardFragment : Fragment() {
             loadingDialog.show()
             lifecycleScope.launch {
                 delay(2000)
-                findNavController().navigate(R.id.averageFragment)
+                findNavController().navigate(R.id.hardFragment)
                 defendDialog.dismiss()
                 loadingDialog.dismiss()
             }
@@ -221,7 +221,7 @@ class DashBoardFragment : Fragment() {
 
         val builder = GuideView.Builder(this@DashBoardFragment.requireContext())
             .setTitle("Single Player")
-            .setContentText("This is where you can Play Different levels Easy, Medium, Hard")
+            .setContentText("Kung saan makakapag laro ng mag isa lamang laban sa oras")
             .setGravity(Gravity.center)
             .setDismissType(DismissType.anywhere)
             .setPointerType(PointerType.circle)
@@ -240,7 +240,7 @@ class DashBoardFragment : Fragment() {
 
         val builder = GuideView.Builder(this@DashBoardFragment.requireContext())
             .setTitle("MultiPlayer")
-            .setContentText("This is where you can Play with Your Friends")
+            .setContentText("Kung saan makakapag laro ng may mga kasama o kalaban")
             .setGravity(Gravity.center)
             .setDismissType(DismissType.anywhere)
             .setPointerType(PointerType.circle)
@@ -257,7 +257,7 @@ class DashBoardFragment : Fragment() {
 
         val builder = GuideView.Builder(this@DashBoardFragment.requireContext())
             .setTitle("Leaderboards")
-            .setContentText("This is where you can see All players Scores")
+            .setContentText("Kung saan makikita ang mga Records ng mga manlalaro")
             .setGravity(Gravity.center)
             .setDismissType(DismissType.anywhere)
             .setPointerType(PointerType.circle)
@@ -273,7 +273,7 @@ class DashBoardFragment : Fragment() {
 
         val builder = GuideView.Builder(this@DashBoardFragment.requireContext())
             .setTitle("Music")
-            .setContentText("This is where you can On or Off Music")
+            .setContentText("On/Off")
             .setGravity(Gravity.center)
             .setDismissType(DismissType.anywhere)
             .setPointerType(PointerType.circle)
