@@ -85,19 +85,69 @@ class AverageFragment : Fragment() {
 
 
             Card("", id = null, description = "Ano ang nangyayari sa mga taong nahuhuli ng awit ng Ibong Adarna?", 29),
-            Card("Nagiging bato", id = R.drawable.stone, description = "Ano ang nangyayari sa mga taong nahuhuli ng awit ng Ibong Adarna?", 29),
+            Card("Nagiging Bato", id = R.drawable.stone, description = "Ano ang nangyayari sa mga taong nahuhuli ng awit ng Ibong Adarna?", 29),
 
             Card("", id = null, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
             Card("Kabutihan", id = R.drawable.kabutihan, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
 
+            Card("", id = null, description = "Ang hayop na nakatulong kay Don Juan sa pagkuha ng Ibong Adarna", 14),
+            Card("Agila", id = R.drawable.agila, description = "Ang hayop na nakatulong kay Don Juan sa pagkuha ng Ibong Adarna", 14),
+
+            Card("", id = null, description = "Pangunahing tauhan sa Ibong Adarna", 13),
+            Card("Don Juan", id = R.drawable.juan, description = "Pangunahing tauhan sa Ibong Adarna", 13),
+
+            Card("", id = null, description = "Awit na nagpapagaling kay Haring Fernando", 2),
+            Card("Ibon Adarna", id = R.drawable.singibon, description = "Awit na nagpapagaling kay Haring Fernando", 2),
+
+
+            Card("", id = null, description = " Ang panganay na prinsipe na inggit sa kanyang kapatid, at nagpaplano laban kay Don Juan", 4),
+            Card("Don Pedro", id = R.drawable.pedro, description = "", 4),
+
+            Card("", id = null, description = "Ang pangalawang prinsipe na tahimik ngunit tumutulong kay Don Pedro sa kanyang mga pakana", 5),
+            Card("Don Diego", id = R.drawable.diego, description = "", 5),
+
+            Card("", id = null, description = "Ama ng tatlong prinsipe na nagkasakit at nangangailangan ng paghilom ng Ibong Adarna.  ", 7),
+            Card("Hari", id = R.drawable.hari, description = "", 7),
+
+
+            Card("", id = null, description = "Ina ng tatlong prinsipe at asawa ni Haring Fernando", 8),
+            Card("Reyna", id = R.drawable.reyna, description = "", 8),
+
+            Card("", id = null, description = "Isang hari na nagbibigay ng mga pagsubok kay Don Juan", 9),
+            Card("Salermo", id = R.drawable.salermo, description = "", 9),
+
+
+            Card("", id = null, description = "Ang magandang prinsesa na tumutulong kay Don Juan sa mga pagsubok at naging kanyang asawa.  ", 10),
+            Card("Maria", id = R.drawable.maria, description = "", 10),
 
 
 
             // Add more cards as needed
         ).shuffled()
 
+        val selectedCards = mutableListOf<Card>()
+        val pairTracker = mutableSetOf<Int>() // Set to track found pairs
 
-        cards.addAll(cardData)
+        for (card in cardData) {
+            // Check if we have already added a card with this pair number
+            if (!pairTracker.contains(card.pair)) {
+                // Find its matching pair in the shuffled list
+                val matchingPair = cardData.find { it.pair == card.pair && it != card }
+                if (matchingPair != null) {
+                    // Add both the card and its matching pair
+                    selectedCards.add(card)
+                    selectedCards.add(matchingPair)
+                    pairTracker.add(card.pair!!)
+                }
+            }
+
+            // Stop once we've found 6 pairs (12 cards)
+            if (selectedCards.size == 12) break
+        }
+
+        // Clear the current cards and add the new set of 12 cards
+        cards.clear()
+        cards.addAll(selectedCards.shuffled()) // Shuffle the selected pairs again
     }
 
     private fun startTimer(durationInMinutes: Int) {

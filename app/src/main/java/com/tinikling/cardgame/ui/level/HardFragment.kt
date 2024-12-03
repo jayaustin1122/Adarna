@@ -111,7 +111,7 @@ class HardFragment : Fragment() {
             Card("Sibat", id = R.drawable.sibat, description = "", 33),
 
             Card("", id = null, description = "Ilang beses nagpalit ng kulay ang Ibong Adarna habang kumakanta?", 34),
-            Card("Pito", id = R.drawable.bg, description = "", 34),
+            Card("Pito", id = R.drawable.pito, description = "", 34),
 
             Card("", id = null, description = "Sumisimbolo ng kapahamakan ng isang tao", 36),
             Card("Singsing", id = R.drawable.singsing, description = "", 36),
@@ -124,24 +124,24 @@ class HardFragment : Fragment() {
             Card("", id = null, description = "Nang matagpuan ni Don Juan ang mahiwagang balon at tumalon dito.  ", 12),
             Card("Balon", id = R.drawable.balon, description = "", 12),
 
-//            Card("", id = null, description = "Nang mahuli ni Don Juan ang Ibong Adarna", 3),
-//            Card("Lambat", id = R.drawable.lambat, description = "Nang mahuli ni Don Juan ang Ibong Adarna", 3),
-//
-//            Card("", id = null, description = "Saan nagmula ang kwento ng Ibong Adarna?", 23),
-//            Card("Europa", id = R.drawable.europa, description = "Saan nagmula ang kwento ng Ibong Adarna?", 23),
-//
-//            Card("", id = null, description = "Ilan ang magkakapatid na prinsipe sa kwento ng Ibong Adarna?", 24),
-//            Card("3", id = R.drawable.three, description = "Ilan ang magkakapatid na prinsipe sa kwento ng Ibong Adarna?", 24),
-//
-//            Card("", id = null, description = "Ano ang pangalan ng pinakamagiting na prinsipe sa kwento ng Ibong Adarna?", 25),
-//            Card("Don Juan", id = R.drawable.three, description = "Ano ang pangalan ng pinakamagiting na prinsipe sa kwento ng Ibong Adarna?", 25),
-//
-//            Card("", id = null, description = "Sa anong lugar naninirahan ang Ibong Adarna?", 26),
-//            Card("Bundok Tabor", id = R.drawable.tabor, description = "Sa anong lugar naninirahan ang Ibong Adarna?", 26),
-//
-//            Card("", id = null, description = "Ano ang dahilan ng pagpapadala ni Haring Fernando sa kanyang mga anak upang hanapin ang Ibong Adarna?", 27),
-//            Card("karamdaman siya na hindi gumagaling", id = R.drawable.fernando, description = "Ano ang dahilan ng pagpapadala ni Haring Fernando sa kanyang mga anak upang hanapin ang Ibong Adarna?", 27),
-//
+            Card("", id = null, description = "Nang mahuli ni Don Juan ang Ibong Adarna", 3),
+            Card("Lambat", id = R.drawable.lambat, description = "Nang mahuli ni Don Juan ang Ibong Adarna", 3),
+
+            Card("", id = null, description = "Saan nagmula ang kwento ng Ibong Adarna?", 23),
+            Card("Europa", id = R.drawable.europa, description = "Saan nagmula ang kwento ng Ibong Adarna?", 23),
+
+            Card("", id = null, description = "Ilan ang magkakapatid na prinsipe sa kwento ng Ibong Adarna?", 24),
+            Card("3", id = R.drawable.three, description = "Ilan ang magkakapatid na prinsipe sa kwento ng Ibong Adarna?", 24),
+
+            Card("", id = null, description = "Ano ang pangalan ng pinakamagiting na prinsipe sa kwento ng Ibong Adarna?", 25),
+            Card("Don Juan", id = R.drawable.three, description = "Ano ang pangalan ng pinakamagiting na prinsipe sa kwento ng Ibong Adarna?", 25),
+
+            Card("", id = null, description = "Sa anong lugar naninirahan ang Ibong Adarna?", 26),
+            Card("Bundok Tabor", id = R.drawable.tabor, description = "Sa anong lugar naninirahan ang Ibong Adarna?", 26),
+
+            Card("", id = null, description = "Ano ang dahilan ng pagpapadala ni Haring Fernando sa kanyang mga anak upang hanapin ang Ibong Adarna?", 27),
+            Card("karamdaman siya na hindi gumagaling", id = R.drawable.fernando, description = "Ano ang dahilan ng pagpapadala ni Haring Fernando sa kanyang mga anak upang hanapin ang Ibong Adarna?", 27),
+
 
 
 
@@ -149,7 +149,29 @@ class HardFragment : Fragment() {
         ).shuffled()
 
 
-        cards.addAll(cardData)
+        val selectedCards = mutableListOf<Card>()
+        val pairTracker = mutableSetOf<Int>() // Set to track found pairs
+
+        for (card in cardData) {
+            // Check if we have already added a card with this pair number
+            if (!pairTracker.contains(card.pair)) {
+                // Find its matching pair in the shuffled list
+                val matchingPair = cardData.find { it.pair == card.pair && it != card }
+                if (matchingPair != null) {
+                    // Add both the card and its matching pair
+                    selectedCards.add(card)
+                    selectedCards.add(matchingPair)
+                    pairTracker.add(card.pair!!)
+                }
+            }
+
+            // Stop once we've found 6 pairs (12 cards)
+            if (selectedCards.size == 12) break
+        }
+
+        // Clear the current cards and add the new set of 12 cards
+        cards.clear()
+        cards.addAll(selectedCards.shuffled()) // Shuffle the selected pairs again
     }
 
     private fun startTimer(durationInMinutes: Int) {
