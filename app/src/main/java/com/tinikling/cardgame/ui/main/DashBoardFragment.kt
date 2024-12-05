@@ -6,11 +6,13 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +22,7 @@ import com.bumptech.glide.Glide
 import com.tinikling.cardgame.R
 import com.tinikling.cardgame.databinding.DialogPlayerInputBinding
 import com.tinikling.cardgame.databinding.DialogQuestionBinding
+import com.tinikling.cardgame.databinding.DialogQuestionMultiplayerBinding
 import com.tinikling.cardgame.databinding.FragmentDashBoardBinding
 import com.tinikling.cardgame.ui.multiplayer.MultiPlayerFragment
 import com.tinikling.cardgame.utils.DialogUtils
@@ -83,7 +86,7 @@ class DashBoardFragment : Fragment() {
         }
 
         binding.continueButton.setOnClickListener {
-            showPlayerInputDialog()
+            showDialogMultiplayer()
         }
         binding.exit.setOnClickListener {
             requireActivity().finishAffinity()
@@ -215,6 +218,90 @@ class DashBoardFragment : Fragment() {
 
         defendDialog.show()
     }
+    private fun showDialogMultiplayer() {
+        val defendDialogBinding =
+            DialogQuestionMultiplayerBinding.inflate(LayoutInflater.from(requireContext())) // Inflate a custom dialog layout for defending
+
+        val defendDialog = AlertDialog.Builder(requireContext())
+            .setView(defendDialogBinding.root)
+            .create()
+
+        defendDialogBinding.online.setOnClickListener {
+            defendDialog.dismiss()
+            // Show a dialog to ask the user for their name
+            val nameDialog = SweetAlertDialog(activity, SweetAlertDialog.NORMAL_TYPE)
+            nameDialog.setTitleText("Enter Your Name")
+
+            // Create an EditText to capture the name
+            val editText = EditText(activity).apply {
+                hint = "Enter your name"
+            }
+            nameDialog.setCustomView(editText)
+
+            // Set a confirm button to get the name and dismiss the dialog
+            nameDialog.setConfirmText("Submit")
+            nameDialog.setConfirmClickListener {
+                val enteredName = editText.text.toString()
+
+                // You can pass the entered name to the next fragment here
+                if (enteredName.isNotBlank()) {
+                    // Save the name and show the Create/Join dialog
+                    val bundle = Bundle().apply {
+                        putString("playerName1", enteredName)
+
+                    }
+
+                    // Show the "Create or Join" dialog after entering the name
+                    showCreateOrJoinDialog(bundle)
+                } else {
+                    // Show an error message if the name is empty
+                    nameDialog.setTitleText("Name cannot be empty")
+                        .setConfirmText("OK")
+                        .setConfirmClickListener { nameDialog.dismiss() }
+                        .changeAlertType(SweetAlertDialog.ERROR_TYPE)
+                }
+
+                nameDialog.dismiss()
+            }
+
+            // Show the name input dialog
+            nameDialog.show()
+        }
+
+        defendDialogBinding.offline.setOnClickListener {
+            showPlayerInputDialog()
+            defendDialog?.dismiss()
+        }
+
+        defendDialog.show()
+    }
+
+    private fun showCreateOrJoinDialog(bundle: Bundle) {
+        val optionsDialog = SweetAlertDialog(activity, SweetAlertDialog.NORMAL_TYPE)
+        optionsDialog.setTitleText("Select Game Mode")
+        optionsDialog.setContentText("Would you like to Create a new game or Join an existing one?")
+        optionsDialog.setConfirmText("Create")
+        optionsDialog.setCancelText("Join")
+
+        optionsDialog.setConfirmClickListener {
+
+            findNavController().navigate(R.id.roomFragment, bundle)
+            Log.d("send", "inroomfragment$bundle")
+
+            optionsDialog.dismiss()
+        }
+
+        optionsDialog.setCancelClickListener {
+            findNavController().navigate(R.id.joinFragment, bundle)
+            Log.d("send", "injoinfragment$bundle")
+
+            optionsDialog.dismiss()
+        }
+
+        // Show the Create/Join dialog
+        optionsDialog.show()
+    }
+
     private fun showGuide() {
         val sharedPreferences =
             requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)

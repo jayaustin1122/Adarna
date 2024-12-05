@@ -36,4 +36,19 @@
         android:id="@+id/hardFragment"
         android:name="com.tinikling.cardgame.ui.level.HardFragment"
         android:label="HardFragment" />
+    <fragment
+        android:id="@+id/roomFragment"
+        android:name="com.tinikling.cardgame.ui.main.RoomFragment"
+        android:label="fragment_room"
+        tools:layout="@layout/fragment_room" />
+    <fragment
+        android:id="@+id/multiPlayerOnlineFragment"
+        android:name="com.tinikling.cardgame.ui.multiplayer.MultiPlayerOnlineFragment"
+        android:label="fragment_multi_player_online"
+        tools:layout="@layout/fragment_multi_player_online" />
+    <fragment
+        android:id="@+id/joinFragment"
+        android:name="com.tinikling.cardgame.ui.main.JoinFragment"
+        android:label="fragment_join"
+        tools:layout="@layout/fragment_join" />
 </navigation>
