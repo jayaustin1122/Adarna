@@ -48,7 +48,60 @@ class MultiPlayerFragment : Fragment() {
         binding = FragmentMultiPlayerBinding.inflate(layoutInflater)
         return binding.root
     }
+    private fun showMatchMessage() {
+        val matchMessage = binding.matchMessage
 
+        val messages = listOf("Mahusay!", "Magaling!", "Ang galing mo!", "Excellent!", "Great job!", "Tama yan!")
+
+        val selectedMessage = when {
+            points >= 10 -> "Astig ka!"
+            points % 2 == 0 -> messages[0]
+            points % 3 == 0 -> messages[1]
+            else -> messages.random()
+        }
+
+
+        matchMessage.text = selectedMessage
+        matchMessage.visibility = View.VISIBLE
+
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
+        matchMessage.startAnimation(animation)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            matchMessage.visibility = View.GONE
+            callQoutes()
+        }, 1500)
+    }
+    private fun callQoutes() {
+        val matchMessage = binding.qoutes
+
+        // List of trivia facts about Ibong Adarna in Tagalog
+        val trivia = listOf(
+            "Trivia: Ang *Ibong Adarna* ay isang epikong Pilipino na kwento ng tatlong prinsipe at ang kanilang paghahanap sa mahiwagang ibon na may kakayahang magpagaling.",
+            "Alam mo ba? Ang awit ng *Ibong Adarna* ay may kakayahang magpapatulog sa sinumang makakarinig nito sa loob ng pitong araw at pitong gabi.",
+            "Trivia: Ang *Ibong Adarna* ay isa sa mga pinakasikat na akdang pampanitikan sa Pilipinas at isang mahalagang bahagi ng kulturang Pilipino.",
+            "Alam mo ba? Ang *Ibong Adarna* ay orihinal na isinulat sa Kastila at isinalin sa Tagalog noong mga huling taon ng ika-19 na siglo.",
+            "Trivia: Ang mga prinsipe ng *Ibong Adarna* ay dumaan sa iba't ibang pagsubok bago nila matagpuan ang ibon, at tanging si Don Juan lamang ang nagtagumpay.",
+            "Alam mo ba? Ang *Ibong Adarna* ay ginagamit bilang isang simbolo ng pag-asa at pagpapagaling sa maraming aspeto ng kulturang Pilipino.",
+            "Trivia: Sa maraming adaptasyon ng *Ibong Adarna*, ang kwento ay isinapelikula at ipinalabas sa teatro sa iba't ibang panahon."
+        )
+
+        // Select a random trivia
+        val selectedTrivia = trivia.random()
+
+        // Display the trivia
+        matchMessage.text = "Trivia: $selectedTrivia"
+        matchMessage.visibility = View.VISIBLE
+
+        // Apply animation to the text view
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
+        matchMessage.startAnimation(animation)
+
+        // Hide the trivia after 1.5 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            matchMessage.visibility = View.GONE
+        }, 5000)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -183,6 +236,7 @@ class MultiPlayerFragment : Fragment() {
             Toast.makeText(requireContext(), "Match found! Points: $points", Toast.LENGTH_SHORT).show()
             updateRecyclerView()
             addNewCardPair()
+            showMatchMessage()
             adapter.notifyDataSetChanged()
             Handler(Looper.getMainLooper()).postDelayed({
                 cards[firstCardIndex].isFaceUp = false

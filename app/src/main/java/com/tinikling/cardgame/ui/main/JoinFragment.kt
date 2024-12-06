@@ -57,7 +57,9 @@ class JoinFragment : Fragment() {
                     val gameId = roomSnapshot.key
                     val timestamp = roomSnapshot.child("timestamp").getValue(Long::class.java)
                     val playerNamesSnapshot = roomSnapshot.child("playerNames")
+                    val isOpen = roomSnapshot.child("isOpen").getValue(Boolean::class.java) ?: true // Default to true if not set
 
+                    // Continue processing rooms even if isOpen is false
                     val playerNames = mutableListOf<String>()
                     for (playerSnapshot in playerNamesSnapshot.children) {
                         val playerName = playerSnapshot.getValue(String::class.java)
@@ -65,10 +67,19 @@ class JoinFragment : Fragment() {
                     }
 
                     gameId?.let {
-                        roomsList.add(Room(gameId, timestamp, playerNames))
+                        roomsList.add(Room(gameId, timestamp, playerNames, isOpen))
                     }
                 }
-                roomsAdapter.submitList(roomsList)
+
+                // If roomsList is empty, show "No room created, please wait."
+                if (roomsList.isEmpty()) {
+                    binding.recyclerView.visibility = View.GONE
+                    binding.noRoomsText.visibility = View.VISIBLE
+                } else {
+                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.noRoomsText.visibility = View.GONE
+                    roomsAdapter.submitList(roomsList)
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -77,17 +88,24 @@ class JoinFragment : Fragment() {
         })
     }
 
+
     private fun showJoinDialog(gameId: String, playerName: String?, playerNameKo: String?) {
-        DialogUtils.showWarningMessage(requireActivity(), "Join Game", "Do you want to join the game?") { sweetAlertDialog ->
+        val dialog = SweetAlertDialog(requireContext(), SweetAlertDialog.WARNING_TYPE)
+        dialog.titleText = "Sumali sa Laro"
+        dialog.contentText = "Sumali?"
+        dialog.setConfirmButton("Oo") { sweetAlertDialog ->
             sweetAlertDialog.dismissWithAnimation()
-            showLoadingDialog(gameId, playerName,playerNameKo)
+            showLoadingDialog(gameId, playerName, playerNameKo)
         }
+        dialog.setCancelButton("Hindi") { sweetAlertDialog ->
+            sweetAlertDialog.dismissWithAnimation()
+        }
+        dialog.show()
     }
 
     private fun showLoadingDialog(gameId: String, playerName: String?, playerNameKo: String?) {
         val loadingDialog = DialogUtils.showLoading(requireActivity())
 
-        // After showing the loading dialog, start listening for game start
         listenForGameStart(gameId, playerName, loadingDialog)
         uploadMyName(gameId,playerNameKo)
     }
@@ -95,7 +113,7 @@ class JoinFragment : Fragment() {
     private fun uploadMyName(gameId: String, playerNameKo: String?) {
         if (playerNameKo.isNullOrEmpty()) {
             // Handle case where playerName is empty
-            Toast.makeText(context, "Player name is required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Kailangan ng Pangalan na Manlalaro", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -118,7 +136,7 @@ class JoinFragment : Fragment() {
                 playerNamesRef.setValue(currentPlayerNames)
                     .addOnSuccessListener {
                         // Successfully added the player name
-                        Toast.makeText(context, "Player added successfully!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Sumali!", Toast.LENGTH_SHORT).show()
                     }
                     .addOnFailureListener { exception ->
                         // Handle failure

@@ -3,10 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context=".ui.main.JoinFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        tools:listitem="@layout/item_player"
         android:id="@+id/recyclerView"/>
+    <TextView
+        android:id="@+id/no_rooms_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No room created, please wait."
+        android:fontFamily="@font/irish"
+        android:textSize="22sp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:textColor="@android:color/white"
+  />
 </FrameLayout>

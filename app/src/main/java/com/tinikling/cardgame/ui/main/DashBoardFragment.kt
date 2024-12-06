@@ -2,6 +2,7 @@ package com.tinikling.cardgame.ui.main
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -13,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -220,7 +222,7 @@ class DashBoardFragment : Fragment() {
     }
     private fun showDialogMultiplayer() {
         val defendDialogBinding =
-            DialogQuestionMultiplayerBinding.inflate(LayoutInflater.from(requireContext())) // Inflate a custom dialog layout for defending
+            DialogQuestionMultiplayerBinding.inflate(LayoutInflater.from(requireContext()))
 
         val defendDialog = AlertDialog.Builder(requireContext())
             .setView(defendDialogBinding.root)
@@ -228,35 +230,28 @@ class DashBoardFragment : Fragment() {
 
         defendDialogBinding.online.setOnClickListener {
             defendDialog.dismiss()
-            // Show a dialog to ask the user for their name
             val nameDialog = SweetAlertDialog(activity, SweetAlertDialog.NORMAL_TYPE)
-            nameDialog.setTitleText("Enter Your Name")
+            nameDialog.setTitleText("Ilagay Ang Pangalan")
 
-            // Create an EditText to capture the name
             val editText = EditText(activity).apply {
                 hint = "Enter your name"
+                setTextColor(Color.WHITE)
             }
             nameDialog.setCustomView(editText)
 
-            // Set a confirm button to get the name and dismiss the dialog
             nameDialog.setConfirmText("Submit")
             nameDialog.setConfirmClickListener {
                 val enteredName = editText.text.toString()
 
-                // You can pass the entered name to the next fragment here
                 if (enteredName.isNotBlank()) {
-                    // Save the name and show the Create/Join dialog
                     val bundle = Bundle().apply {
                         putString("playerName1", enteredName)
-
                     }
 
-                    // Show the "Create or Join" dialog after entering the name
                     showCreateOrJoinDialog(bundle)
                 } else {
-                    // Show an error message if the name is empty
-                    nameDialog.setTitleText("Name cannot be empty")
-                        .setConfirmText("OK")
+                    nameDialog.setTitleText("Lagay ang Pangalan")
+                        .setConfirmText("Mag Patuloy")
                         .setConfirmClickListener { nameDialog.dismiss() }
                         .changeAlertType(SweetAlertDialog.ERROR_TYPE)
                 }
@@ -264,7 +259,6 @@ class DashBoardFragment : Fragment() {
                 nameDialog.dismiss()
             }
 
-            // Show the name input dialog
             nameDialog.show()
         }
 
@@ -276,31 +270,46 @@ class DashBoardFragment : Fragment() {
         defendDialog.show()
     }
 
+
     private fun showCreateOrJoinDialog(bundle: Bundle) {
         val optionsDialog = SweetAlertDialog(activity, SweetAlertDialog.NORMAL_TYPE)
-        optionsDialog.setTitleText("Select Game Mode")
-        optionsDialog.setContentText("Would you like to Create a new game or Join an existing one?")
-        optionsDialog.setConfirmText("Create")
-        optionsDialog.setCancelText("Join")
+        optionsDialog.setTitleText("Pumili ng Laro")
+        optionsDialog.setContentText("Gumawa ng bago o magsali?")
+        optionsDialog.setConfirmText("Gumawa")
+        optionsDialog.setCancelText("Sumali")
+
+        // Change the title and content text color to white using reflection
+        optionsDialog.setOnShowListener {
+            try {
+                val titleField = optionsDialog::class.java.getDeclaredField("titleText")
+                titleField.isAccessible = true
+                val titleTextView = titleField.get(optionsDialog) as TextView
+                titleTextView.setTextColor(Color.WHITE)
+
+                val contentField = optionsDialog::class.java.getDeclaredField("contentText")
+                contentField.isAccessible = true
+                val contentTextView = contentField.get(optionsDialog) as TextView
+                contentTextView.setTextColor(Color.WHITE)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
 
         optionsDialog.setConfirmClickListener {
-
             findNavController().navigate(R.id.roomFragment, bundle)
             Log.d("send", "inroomfragment$bundle")
-
             optionsDialog.dismiss()
         }
 
         optionsDialog.setCancelClickListener {
             findNavController().navigate(R.id.joinFragment, bundle)
             Log.d("send", "injoinfragment$bundle")
-
             optionsDialog.dismiss()
         }
 
-        // Show the Create/Join dialog
         optionsDialog.show()
     }
+
 
     private fun showGuide() {
         val sharedPreferences =

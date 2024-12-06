@@ -20,7 +20,7 @@ class CardAdapter(
     inner class CardViewHolder(private val binding: ItemCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(card: Card) {
+        fun bind(card: Card, position: Int) {
             // Show the image or description based on whether the card is face up
             if (card.isFaceUp || card.isMatched) {
                 if (card.id != null) {
@@ -46,7 +46,7 @@ class CardAdapter(
                     if (!card.isFaceUp && !card.isMatched) {
                         flipCard(binding.cardImage, card) {
                             // After flip, notify the adapter about the click event
-                            cardClickListener(adapterPosition)
+                            cardClickListener(position)  // Use position here
                         }
                     }
                 }
@@ -57,14 +57,15 @@ class CardAdapter(
         }
     }
 
+    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
+        holder.bind(cards[position], position)  // Pass position explicitly to bind method
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val binding = ItemCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CardViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bind(cards[position])
-    }
 
     override fun getItemCount(): Int = cards.size
 

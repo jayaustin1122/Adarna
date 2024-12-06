@@ -1,5 +1,6 @@
 package com.tinikling.cardgame.ui.multiplayer
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -53,8 +54,10 @@ class MultiPlayerOnlineFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
         playerNames = arguments?.getStringArray("playerNames") ?: arrayOf()
@@ -64,19 +67,35 @@ class MultiPlayerOnlineFragment : Fragment() {
 
         settingUpGame()
         startGameTimer()
+
+        // Initialize player points
         for (player in playerNames) {
             playerPoints[player] = 0
         }
+
+        nameUser?.let {
+            val pointsRef = database.child("rooms").child(gameId!!).child("points")
+            pointsRef.child(it).setValue(0) // Set initial points to 0
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("Firebase", "Player $nameUser points initialized to 0")
+                    } else {
+                        Log.e("Firebase", "Failed to upload points for $nameUser")
+                    }
+                }
+        }
+
         startGame()
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         setupGame()
+
         adapter = CardAdapter(cards) { position ->
             onCardClicked(position)
             select()
         }
         binding.recyclerView.adapter = adapter
-
     }
+
 
     private fun settingUpGame() {
         val progressDialog = DialogUtils.showLoading(activity)
@@ -84,7 +103,60 @@ class MultiPlayerOnlineFragment : Fragment() {
             progressDialog.dismiss()  // Dismiss the dialog after 10 seconds
         }, 10000) // 10,000 milliseconds = 10 seconds
     }
+    private fun showMatchMessage() {
+        val matchMessage = binding.matchMessage
 
+        val messages = listOf("Mahusay!", "Magaling!", "Ang galing mo!", "Excellent!", "Great job!", "Tama yan!")
+
+        val selectedMessage = when {
+            points >= 10 -> "Astig ka!"
+            points % 2 == 0 -> messages[0]
+            points % 3 == 0 -> messages[1]
+            else -> messages.random()
+        }
+
+
+        matchMessage.text = selectedMessage
+        matchMessage.visibility = View.VISIBLE
+
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
+        matchMessage.startAnimation(animation)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            matchMessage.visibility = View.GONE
+            callQoutes()
+        }, 1500)
+    }
+    private fun callQoutes() {
+        val matchMessage = binding.qoutes
+
+        // List of trivia facts about Ibong Adarna in Tagalog
+        val trivia = listOf(
+            "Trivia: Ang *Ibong Adarna* ay isang epikong Pilipino na kwento ng tatlong prinsipe at ang kanilang paghahanap sa mahiwagang ibon na may kakayahang magpagaling.",
+            "Alam mo ba? Ang awit ng *Ibong Adarna* ay may kakayahang magpapatulog sa sinumang makakarinig nito sa loob ng pitong araw at pitong gabi.",
+            "Trivia: Ang *Ibong Adarna* ay isa sa mga pinakasikat na akdang pampanitikan sa Pilipinas at isang mahalagang bahagi ng kulturang Pilipino.",
+            "Alam mo ba? Ang *Ibong Adarna* ay orihinal na isinulat sa Kastila at isinalin sa Tagalog noong mga huling taon ng ika-19 na siglo.",
+            "Trivia: Ang mga prinsipe ng *Ibong Adarna* ay dumaan sa iba't ibang pagsubok bago nila matagpuan ang ibon, at tanging si Don Juan lamang ang nagtagumpay.",
+            "Alam mo ba? Ang *Ibong Adarna* ay ginagamit bilang isang simbolo ng pag-asa at pagpapagaling sa maraming aspeto ng kulturang Pilipino.",
+            "Trivia: Sa maraming adaptasyon ng *Ibong Adarna*, ang kwento ay isinapelikula at ipinalabas sa teatro sa iba't ibang panahon."
+        )
+
+        // Select a random trivia
+        val selectedTrivia = trivia.random()
+
+        // Display the trivia
+        matchMessage.text = "Trivia: $selectedTrivia"
+        matchMessage.visibility = View.VISIBLE
+
+        // Apply animation to the text view
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_in)
+        matchMessage.startAnimation(animation)
+
+        // Hide the trivia after 1.5 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            matchMessage.visibility = View.GONE
+        }, 5000)
+    }
     private fun setupGame() {
         val cardData = listOf(
             Card("", id = null, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
@@ -126,6 +198,7 @@ class MultiPlayerOnlineFragment : Fragment() {
             }
         }
     }
+    @SuppressLint("NewApi")
     private fun checkForMatch(firstCardIndex: Int, secondCardIndex: Int) {
         val firstCard = cards[firstCardIndex]
         val secondCard = cards[secondCardIndex]
@@ -134,30 +207,51 @@ class MultiPlayerOnlineFragment : Fragment() {
             // Cards match
             firstCard.isMatched = true
             secondCard.isMatched = true
-            points += 1
-            playerPoints[playerNames[currentPlayerIndex]] = playerPoints.getOrDefault(playerNames[currentPlayerIndex], 0) + 1
-            playMatchSound()
-            Toast.makeText(requireContext(), "Match found! Points: $points", Toast.LENGTH_SHORT).show()
-            updateRecyclerView()
-            addNewCardPair()
-            adapter.notifyDataSetChanged()
-            Handler(Looper.getMainLooper()).postDelayed({
-                cards[firstCardIndex].isFaceUp = false
-                cards[secondCardIndex].isFaceUp = false
-                if (firstCardIndex > secondCardIndex) {
-                    cards.removeAt(firstCardIndex)
-                    cards.removeAt(secondCardIndex)
-                } else {
-                    cards.removeAt(secondCardIndex)
-                    cards.removeAt(firstCardIndex)
-                }
-                adapter.notifyItemRangeRemoved(firstCardIndex.coerceAtMost(secondCardIndex), 2)
-                closeAllCardsAndReshuffle()
-                isCardClickable = true
-            }, 1000)
-        } else {
-            updateRecyclerView()
 
+            // Update points locally
+            points += 1
+
+            // Use nameUser directly to update points
+            nameUser?.let {
+                playerPoints[it] = playerPoints.getOrDefault(it, 0) + 1
+
+                // Play sound and show toast
+                playMatchSound()
+                Toast.makeText(requireContext(), "Match found! Points: ${playerPoints[it]}", Toast.LENGTH_SHORT).show()
+
+                // Update RecyclerView
+                updateRecyclerView()
+                addNewCardPair()
+                showMatchMessage()
+                adapter.notifyDataSetChanged()
+
+                // Update points in Firebase Database
+                val database = FirebaseDatabase.getInstance().reference
+                val pointsRef = database.child("rooms").child(gameId!!).child("points")
+                pointsRef.child(it).setValue(playerPoints[it]) // Upload updated points for the current player
+
+                // Remove matched cards and reshuffle after a delay
+                Handler(Looper.getMainLooper()).postDelayed({
+                    cards[firstCardIndex].isFaceUp = false
+                    cards[secondCardIndex].isFaceUp = false
+
+                    // Remove the matched cards from the list
+                    if (firstCardIndex > secondCardIndex) {
+                        cards.removeAt(firstCardIndex)
+                        cards.removeAt(secondCardIndex)
+                    } else {
+                        cards.removeAt(secondCardIndex)
+                        cards.removeAt(firstCardIndex)
+                    }
+                    adapter.notifyItemRangeRemoved(firstCardIndex.coerceAtMost(secondCardIndex), 2)
+                    closeAllCardsAndReshuffle()
+                    isCardClickable = true
+                }, 1000)
+            }
+
+        } else {
+            // Cards don't match, flip them back after a delay
+            updateRecyclerView()
             Handler(Looper.getMainLooper()).postDelayed({
                 firstCard.isFaceUp = false
                 secondCard.isFaceUp = false
@@ -167,6 +261,8 @@ class MultiPlayerOnlineFragment : Fragment() {
             }, 1000)
         }
     }
+
+
     private fun closeAllCardsAndReshuffle() {
         updateRecyclerView()
         for (i in cards.indices) {
@@ -320,35 +416,70 @@ class MultiPlayerOnlineFragment : Fragment() {
             adapter.notifyDataSetChanged()
         }
     }
+
     private fun endGame() {
+        val database = FirebaseDatabase.getInstance().reference
+        val pointsRef = database.child("rooms").child(gameId!!).child("points")
+        // Navigate to the dashboard
         findNavController().navigate(R.id.dashBoardFragment)
-        val highestScore = playerPoints.values.maxOrNull() ?: 0
-        val winners = playerPoints.filter { it.value == highestScore }.keys
 
-        var scoresMessage = "Game Over!\n"
-        playerPoints.forEach { (player, score) ->
-            scoresMessage += "$player: $score points\n"
-        }
+        // Retrieve the points for all players from the database
+        pointsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val allPlayerPoints = mutableMapOf<String, Int>()
 
-        scoresMessage += if (winners.size > 1) {
-            "\nWinners: ${winners.joinToString(", ")} with $highestScore points!"
-        } else {
-            "\nWinner: ${winners.first()} with $highestScore points!"
-        }
+                // Loop through the points and retrieve player names and their scores
+                for (snapshot in dataSnapshot.children) {
+                    val playerName = snapshot.key ?: ""
+                    val playerScore = snapshot.getValue(Int::class.java) ?: 0
+                    allPlayerPoints[playerName] = playerScore
+                }
 
-        val binding = DialogendgameBinding.inflate(LayoutInflater.from(requireContext()))
-        binding.winners.text = scoresMessage
+                // Find the highest score and the winners
+                val highestScore = allPlayerPoints.values.maxOrNull() ?: 0
+                val winners = allPlayerPoints.filter { it.value == highestScore }.keys
 
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(binding.root)
-            .create()
+                // Create a message to display the winner(s) and all player scores
+                var scoresMessage = "Game Over!\n"
+                allPlayerPoints.forEach { (player, score) ->
+                    scoresMessage += "$player: $score points\n"
+                }
 
-        binding.okay.setOnClickListener {
-            dialog.dismiss()
-        }
+                // Add the winner(s) to the message
+                scoresMessage += if (winners.isNotEmpty()) {
+                    if (winners.size > 1) {
+                        "\nWinners: ${winners.joinToString(", ")} with $highestScore points!"
+                    } else {
+                        "\nWinner: ${winners.first()} with $highestScore points!"
+                    }
+                } else {
+                    "\nNo winners found!"
+                }
 
-        dialog.show()
+                // Show the results in a dialog
+                val binding = DialogendgameBinding.inflate(LayoutInflater.from(requireContext()))
+                binding.winners.text = scoresMessage
+
+                val dialog = AlertDialog.Builder(requireContext())
+                    .setView(binding.root)
+                    .create()
+
+                binding.okay.setOnClickListener {
+                    dialog.dismiss()
+                    deleteGameRoom()
+                }
+
+                dialog.show()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle possible errors
+                Log.e("FirebaseError", "Error retrieving data", databaseError.toException())
+            }
+        })
     }
+
+
 
 
     private fun startGameTimer() {
@@ -368,7 +499,7 @@ class MultiPlayerOnlineFragment : Fragment() {
 
             override fun onFinish() {
                 Toast.makeText(context, "Game Over!", Toast.LENGTH_SHORT).show()
-                deleteGameRoom()
+
                 endGame()
                 shakeRecyclerView()
 

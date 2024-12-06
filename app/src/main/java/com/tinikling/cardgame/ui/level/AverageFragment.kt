@@ -290,7 +290,7 @@ class AverageFragment : Fragment() {
         // Hide the trivia after 1.5 seconds
         Handler(Looper.getMainLooper()).postDelayed({
             matchMessage.visibility = View.GONE
-        }, 5000)
+        }, 7000)
     }
 
     private fun shakeCardAtIndex(index: Int) {
