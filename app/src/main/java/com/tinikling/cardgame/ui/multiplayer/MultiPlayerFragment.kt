@@ -181,17 +181,21 @@ class MultiPlayerFragment : Fragment() {
 
     private fun setupGame() {
         val cardData = listOf(
-            Card("", id = null, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
-            Card("Puno ng Kabutihan", id = R.drawable.bg, description = "Saan nagmula ang Ibong Adarna ayon sa kwento?", 32),
+
             Card("", id = null, description = "Ang pagtataksil ng magkapatid (si Don Pedro at Don Diego na itinali si Don Juan sa puno.", 11),
             Card("Tali", id = R.drawable.tali, description = "", 11),
+
             Card("", id = null, description = "Ano ang ginagamit ni Don Juan upang hindi siya makatulog habang hinihintay ang Ibong Adarna?", 33),
             Card("Sibat", id = R.drawable.sibat, description = "", 33),
+
             Card("", id = null, description = "Sino ang tagapagligtas ni Don Juan matapos siyang pagtaksilan ng kanyang mga kapatid?", 35),
             Card("Ermitanyo", id = R.drawable.ermitanyo, description = "", 35),
+
             Card("", id = null, description = "Sino ang hari ng Berbanya sa simula ng kwento?", 15),
             Card("Haring Fernando", id = R.drawable.fernando, description = "Sino ang hari ng Berbanya sa simula ng kwento?", 15),
 
+            Card("", id = null, description = "Ilang beses nagpalit ng kulay ang Ibong Adarna habang kumakanta?", 34),
+            Card("Pito", id = R.drawable.pito, description = "", 34),
 
             Card("", id = null, description = "Ano ang nangyayari sa mga taong nahuhuli ng awit ng Ibong Adarna?", 29),
             Card("Nagiging bato", id = R.drawable.stone, description = "Ano ang nangyayari sa mga taong nahuhuli ng awit ng Ibong Adarna?", 29),
@@ -281,13 +285,9 @@ class MultiPlayerFragment : Fragment() {
         adapter.notifyDataSetChanged()
 
         val newCardPair = mutableListOf(
-            Card("", id = null, description = "Ilang beses nagpalit ng kulay ang Ibong Adarna habang kumakanta?", 34),
-            Card("Pito", id = R.drawable.pito, description = "", 34),
 
             Card("", id = null, description = "Sumisimbolo ng kapahamakan ng isang tao", 36),
             Card("Singsing", id = R.drawable.singsing, description = "", 36),
-
-
 
             Card("", id = null, description = "Ano ang sumisimbolo sa katuparan ng pangarap o tagumpay?.  ", 30),
             Card("Ibon", id = R.drawable.singibon, description = "Ano ang sumisimbolo sa katuparan ng pangarap o tagumpay?", 30),
@@ -334,9 +334,6 @@ class MultiPlayerFragment : Fragment() {
 
             Card("", id = null, description = "Paano tinraydor ni Don Pedro si Don Juan matapos mahuli ang Ibong Adarna?", 20),
             Card("Sinaktan niya si Don Juan at iniwan sa balon", id = R.drawable.balon, description = "Paano tinraydor ni Don Pedro si Don Juan matapos mahuli ang Ibong Adarna?", 20),
-
-            Card("", id = null, description = "Ano ang nagiging papel ng Ermitanyo sa buhay ni Don Juan?", 21),
-            Card("Nagbigay ng payo at mga mahiwagang gamit", id = R.drawable.advice, description = "Ano ang nagiging papel ng Ermitanyo sa buhay ni Don Juan?", 21),
 
             Card("", id = null, description = "Sa kabuuan ng kwento, paano nakatulong ang iba't ibang pantulong na tauhan (tulad ng mga ermitanyo at hayop) sa moral at espiritwal na paglaki ni Don Juan?", 22),
             Card("Tinuruan siya ng kababaang-loob at pagtitiwala sa Diyos", id = R.drawable.believe, description = "Sa kabuuan ng kwento, paano nakatulong ang iba't ibang pantulong na tauhan (tulad ng mga ermitanyo at hayop) sa moral at espiritwal na paglaki ni Don Juan?", 22),
