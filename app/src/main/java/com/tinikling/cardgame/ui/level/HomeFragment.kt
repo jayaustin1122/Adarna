@@ -302,7 +302,7 @@ class HomeFragment : Fragment() {
             "Alam mo ba? Ang Ibong Adarna ay may kapangyarihang pagalingin ang kahit anong sakit gamit ang kanyang mahiwagang awit.",
             "Trivia: Si Don Juan ang prinsipe na matagumpay na nahuli ang Ibong Adarna matapos harapin ang maraming pagsubok.",
             "Alam mo ba? Ang awit ng Ibong Adarna ay may kakayahang makatulog at gawing bato ang sino mang makarinig nito."
-            ,"Trivia: Bago mahuli ni Don Juan ang Ibong Adarna, kinailangan niyang lagyan ng lambanog ang kanyang katawan upang hindi siya mabato ng awit ng ibon.")
+           )
 
 
         val selectedTrivia = trivia.random()

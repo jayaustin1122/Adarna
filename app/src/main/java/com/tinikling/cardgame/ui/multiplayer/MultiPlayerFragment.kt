@@ -37,7 +37,7 @@ class MultiPlayerFragment : Fragment() {
     private var playerPoints = mutableMapOf<String, Int>()
     private var currentPlayerIndex = 0
     private var turnDuration = 0 // 10 seconds per player turn
-    private val gameDuration = 30000L // 1 minute total game time
+    private val gameDuration = 150000L // 1 minute total game time
     private lateinit var gameTimer: CountDownTimer
     private lateinit var turnTimer: CountDownTimer
 
@@ -130,18 +130,28 @@ class MultiPlayerFragment : Fragment() {
     }
 
     private fun startGameTimer() {
+        // Set the game duration to 3 minutes in milliseconds (3 * 60 * 1000)
+        val gameDuration = 3 * 60000L
+
         gameTimer = object : CountDownTimer(gameDuration, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                // Convert milliseconds to seconds
                 val secondsRemaining = millisUntilFinished / 1000
-                binding.timerText.text = String.format(secondsRemaining.toString())
+                // Calculate minutes and seconds
+                val minutesRemaining = secondsRemaining / 60
+                val secondsRemainingInMinute = secondsRemaining % 60
+
+                // Display the formatted time as MM:SS
+                binding.timerText.text = String.format("%02d:%02d", minutesRemaining, secondsRemainingInMinute)
             }
 
             override fun onFinish() {
-                endGame()
+                endGame() // Call the endGame function when the timer finishes
             }
         }
         gameTimer.start()
     }
+
 
     private fun startTurnTimer(turnDurationInSeconds: Int) {
         val currentPlayer = playerList[currentPlayerIndex]

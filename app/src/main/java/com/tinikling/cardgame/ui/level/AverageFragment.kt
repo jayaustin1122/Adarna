@@ -48,7 +48,7 @@ class AverageFragment : Fragment() {
         binding.points.text = "Points: $points"
         binding.recyclerView.layoutManager =
             GridLayoutManager(requireContext(), 3) // 4 cards per row
-        startTimer(2)
+        startTimer(3)
         setupGame()
 
         binding.hints.setOnClickListener {
